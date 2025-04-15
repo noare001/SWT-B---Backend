@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>fh.dualo</groupId>
-	<artifactId>SpringMQTConnector</artifactId>
+	<artifactId>mqtt-connector</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>SpringMQTConnector</name>
+	<name>mqtt-connector</name>
 	<description>SpringMQTConnector</description>
 	<packaging>jar</packaging>
 

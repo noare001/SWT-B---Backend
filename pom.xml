@@ -12,7 +12,7 @@
 
     <modules>
         <module>BackendSWT</module>
-        <module>SpringMQTConnector</module>
+        <module>mqtt-connector</module>
     </modules>
 
     <properties>
