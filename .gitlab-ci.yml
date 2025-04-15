@@ -1,5 +1,7 @@
 build-job_small:
   stage: build
+  tags:
+    - docker
   script:
     - echo "Hello, $GITLAB_USER_LOGIN!"
 
