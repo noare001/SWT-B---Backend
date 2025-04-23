@@ -2,7 +2,7 @@ stages:
   - verify
   - release
 
-  services:
+services:
   - docker:19.03.12-dind
 
 variables:
