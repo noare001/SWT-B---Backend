@@ -2,18 +2,15 @@ stages:
   - verify
   - release
 
-image: gitlab/dind
-
-services:
-  - docker:dind
-
 variables:
   MAVEN_CLI_OPTS: "-B -U"
 
 .default-job-template: &default-job-template
   tags:
     - docker
-  image: maven:3.9.6-eclipse-temurin-22
+  image: gitlab/dind
+  services:
+  - docker:dind
   before_script:
     - echo "Using JDK and Maven in Docker"
     - java -version
