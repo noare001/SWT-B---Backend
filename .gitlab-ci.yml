@@ -29,8 +29,7 @@ verify:
 release:
   stage: release
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
+
   parallel:
     matrix:
       - PROJECT: BackendSWT
