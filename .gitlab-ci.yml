@@ -1,6 +1,5 @@
-before_script:
-  - apt-get update
-  - apt-get install -y docker.io
+services:
+  - docker:19.03.12-dind
 
 stages:
   - verify
