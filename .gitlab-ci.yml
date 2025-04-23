@@ -13,7 +13,6 @@ variables:
   - docker:dind
   before_script:
     - echo "Using JDK and Maven in Docker"
-    - java -version
     - mvn -v
     - docker --version || echo 'Docker CLI not found'
     - which dockerd || echo 'Docker daemon not found'
