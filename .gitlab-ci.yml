@@ -8,9 +8,6 @@ variables:
 .default-job-template: &default-job-template
   tags:
     - docker
-  image: gitlab/dind
-  services:
-  - docker:dind
   before_script:
     - echo "Using JDK and Maven in Docker"
     - mvn -v
@@ -19,8 +16,10 @@ variables:
     - service docker status || echo 'Docker service status check failed'
     - ls -lah /var/run/docker.sock || echo 'Cannot access Docker socket'
     - dockerd --version || echo 'Docker daemon version command failed'
-    - docker run -p 8081:8080 my-springboot-app
+    - docker build -t my-springboot-app .
     - sleep 10  # Give time for the Docker daemon to start
+    - docker images
+    - docker run -p 8081:8080 my-springboot-app
 
 verify:
   stage: verify
