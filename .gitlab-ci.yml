@@ -2,8 +2,10 @@ stages:
   - verify
   - release
 
+image: gitlab/dind
+
 services:
-  - docker:19.03.12-dind
+  - docker:dind
 
 variables:
   MAVEN_CLI_OPTS: "-B -U"
