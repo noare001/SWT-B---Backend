@@ -20,7 +20,7 @@ verify:
   stage: verify
   parallel:
     matrix:
-      - PROJECT: BackendSWT
+      - PROJECT: backendswt
       - PROJECT: mqtt-connector
   script:
     - cd $PROJECT
@@ -31,7 +31,7 @@ release:
   rules:
   parallel:
     matrix:
-      - PROJECT: BackendSWT
+      - PROJECT: backendswt
       - PROJECT: mqtt-connector
   script:
     - cd $PROJECT
