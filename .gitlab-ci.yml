@@ -8,9 +8,6 @@ variables:
 .default-job-template: &default-job-template
   tags:
     - docker
-  before_script:
-    - echo "Using JDK and Maven in Docker"
-    - mvn -v
 
 verify:
   stage: verify
