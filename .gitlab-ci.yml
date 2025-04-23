@@ -4,33 +4,24 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "-B -U"
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
 
-.default-job-template: &default-job-template
+default:
+  image: docker:24.0.5-cli
+  services:
+    - name: docker:24.0.5-dind
+      alias: docker
   tags:
     - docker
-  image: gitlab/dind
-  services:
-  - docker:dind
-  before_script:
-    - echo "Using JDK and Maven in Docker"
-    - mvn -v
-    - docker --version || echo 'Docker CLI not found'
-    - which dockerd || echo 'Docker daemon not found'
-    - service docker status || echo 'Docker service status check failed'
-    - ls -lah /var/run/docker.sock || echo 'Cannot access Docker socket'
-    - dockerd --version || echo 'Docker daemon version command failed'
-    - dockerd &
-    - sleep 10  # Give time for the Docker daemon to start
 
 verify:
+  image: maven:3.9.4-eclipse-temurin-21
   stage: verify
   parallel:
     matrix:
       - PROJECT: BackendSWT
-        JDK_VERSION: 21
       - PROJECT: mqtt-connector
-        JDK_VERSION: 21
-  <<: *default-job-template
   script:
     - cd $PROJECT
     - mvn $MAVEN_CLI_OPTS verify
@@ -38,20 +29,9 @@ verify:
 release:
   stage: release
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
   parallel:
     matrix:
       - PROJECT: BackendSWT
-        JDK_VERSION: 21
       - PROJECT: mqtt-connector
-        JDK_VERSION: 21
-  <<: *default-job-template
   script:
     - cd $PROJECT
-    - mvn $MAVEN_CLI_OPTS package
-    - echo "Ich war hier"
-    - echo "$CI_JOB_TOKEN" | docker login ghcr.io -u gitlab-ci-token --password-stdin
-    - export REPO_LOWERCASE=$(echo "$CI_PROJECT_PATH" | tr '[:upper:]' '[:lower:]')
-    - docker build -t ghcr.io/$REPO_LOWERCASE/$PROJECT:$CI_COMMIT_SHA .
-    - docker push ghcr.io/$REPO_LOWERCASE/$PROJECT:$CI_COMMIT_SHA
