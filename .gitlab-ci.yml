@@ -16,6 +16,13 @@ variables:
     - echo "Using JDK and Maven in Docker"
     - java -version
     - mvn -v
+    - docker --version || echo 'Docker CLI not found'
+    - which dockerd || echo 'Docker daemon not found'
+    - service docker status || echo 'Docker service status check failed'
+    - ls -lah /var/run/docker.sock || echo 'Cannot access Docker socket'
+    - dockerd --version || echo 'Docker daemon version command failed'
+    - dockerd &
+    - sleep 10  # Give time for the Docker daemon to start
 
 verify:
   stage: verify
