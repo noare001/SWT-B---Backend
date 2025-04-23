@@ -13,6 +13,7 @@ stages:
   rules:
     - if: '$CI_MERGE_REQUEST_ID'
 
+
 pre_merge_check_backendswt:
   <<: *pre_merge_template
   variables:

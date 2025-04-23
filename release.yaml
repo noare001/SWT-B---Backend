@@ -4,7 +4,7 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "-B -U"
-  GIT_DEPTH: 0  # Ensures full git history for metadata if needed
+  GIT_DEPTH: 0
   DOCKER_DRIVER: overlay2
 
 default:
