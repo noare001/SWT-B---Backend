@@ -4,25 +4,24 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "-B -U"
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
 
-.default-job-template: &default-job-template
+default:
+  image: docker:24.0.5-cli
+  services:
+    - name: docker:24.0.5-dind
+      alias: docker
   tags:
     - docker
-  image: maven:3.9.6-eclipse-temurin-22
-  before_script:
-    - echo "Using JDK and Maven in Docker"
-    - java -version
-    - mvn -v
 
 verify:
+  image: maven:3.9.4-eclipse-temurin-21
   stage: verify
   parallel:
     matrix:
       - PROJECT: BackendSWT
-        JDK_VERSION: 21
       - PROJECT: mqtt-connector
-        JDK_VERSION: 21
-  <<: *default-job-template
   script:
     - cd $PROJECT
     - mvn $MAVEN_CLI_OPTS verify
@@ -30,19 +29,16 @@ verify:
 release:
   stage: release
   rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: always
   parallel:
     matrix:
       - PROJECT: BackendSWT
-        JDK_VERSION: 21
       - PROJECT: mqtt-connector
-        JDK_VERSION: 21
-  <<: *default-job-template
   script:
     - cd $PROJECT
-    - mvn $MAVEN_CLI_OPTS package
-    - echo "$CI_JOB_TOKEN" | docker login ghcr.io -u gitlab-ci-token --password-stdin
-    - export REPO_LOWERCASE=$(echo "$CI_PROJECT_PATH" | tr '[:upper:]' '[:lower:]')
-    - docker build -t ghcr.io/$REPO_LOWERCASE/$PROJECT:$CI_COMMIT_SHA .
-    - docker push ghcr.io/$REPO_LOWERCASE/$PROJECT:$CI_COMMIT_SHA
+    - export IMAGE_NAME="registry.gitlab.com/$CI_PROJECT_PATH/$PROJECT"
+    - export IMAGE_TAG="$CI_COMMIT_SHORT_SHA"
+    - docker build -t $IMAGE_NAME:$IMAGE_TAG .
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+  only:
+    - main
