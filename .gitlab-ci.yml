@@ -1,9 +1,9 @@
-services:
-  - docker:19.03.12-dind
-
 stages:
   - verify
   - release
+
+  services:
+  - docker:19.03.12-dind
 
 variables:
   MAVEN_CLI_OPTS: "-B -U"
