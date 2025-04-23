@@ -4,8 +4,13 @@ stages:
 
 variables:
   MAVEN_CLI_OPTS: "-B -U"
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
 
-.default-job-template: &default-job-template
+default:
+  image: maven:3.9.4-eclipse-temurin-21
+  services:
+    - docker:dind
   tags:
     - docker
 
@@ -17,7 +22,6 @@ verify:
         JDK_VERSION: 21
       - PROJECT: mqtt-connector
         JDK_VERSION: 21
-  <<: *default-job-template
   script:
     - cd $PROJECT
     - mvn $MAVEN_CLI_OPTS verify
@@ -33,12 +37,11 @@ release:
         JDK_VERSION: 21
       - PROJECT: mqtt-connector
         JDK_VERSION: 21
-  <<: *default-job-template
   script:
     - cd $PROJECT
     - mvn $MAVEN_CLI_OPTS package
     - echo "Ich war hier"
     - echo "$CI_JOB_TOKEN" | docker login ghcr.io -u gitlab-ci-token --password-stdin
     - export REPO_LOWERCASE=$(echo "$CI_PROJECT_PATH" | tr '[:upper:]' '[:lower:]')
-    - docker build -t my-springboot-app .
-    - docker push my-springboot-app
+    - docker build -t $REPO_LOWERCASE:$CI_COMMIT_SHORT_SHA .
+    - docker push $REPO_LOWERCASE:$CI_COMMIT_SHORT_SHA
