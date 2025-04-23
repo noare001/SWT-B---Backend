@@ -9,13 +9,6 @@ variables:
   tags:
     - docker
   before_script:
-    - echo "Using JDK and Maven in Docker"
-    - mvn -v
-    - docker --version || echo 'Docker CLI not found'
-    - which dockerd || echo 'Docker daemon not found'
-    - service docker status || echo 'Docker service status check failed'
-    - ls -lah /var/run/docker.sock || echo 'Cannot access Docker socket'
-    - dockerd --version || echo 'Docker daemon version command failed'
     - docker build -t my-springboot-app .
     - sleep 10  # Give time for the Docker daemon to start
     - docker images
