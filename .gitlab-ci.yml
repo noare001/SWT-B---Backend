@@ -34,12 +34,11 @@ release:
       - PROJECT: backendswt
       - PROJECT: mqtt-connector
   script:
-  - cd $PROJECT
-  - export IMAGE_NAME="registry.gitlab.com/$CI_PROJECT_PATH/$PROJECT"
-  - export IMAGE_TAG="$CI_COMMIT_SHORT_SHA"
-  - docker build -f Dockerfile -t $IMAGE_NAME:$IMAGE_TAG .
-  - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-  - docker push $IMAGE_NAME:$IMAGE_TAG
+    - export IMAGE_NAME="registry.gitlab.com/$CI_PROJECT_PATH/$PROJECT"
+    - export IMAGE_TAG="$CI_COMMIT_SHORT_SHA"
+    - docker build -f Dockerfile -t $IMAGE_NAME:$IMAGE_TAG $PROJECT
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker push $IMAGE_NAME:$IMAGE_TAG
 
   only:
     - main
