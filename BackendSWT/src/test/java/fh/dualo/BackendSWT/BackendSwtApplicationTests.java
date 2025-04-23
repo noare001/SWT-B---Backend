@@ -2,7 +2,7 @@ package fh.dualo.BackendSWT;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import BackendSwtApplication; // Wichtig: import für die Hauptklasse
+import fh.dualo.BackendSWT.BackendSwtApplication;
 
 @SpringBootTest(classes = BackendSwtApplication.class)
 class BackendSwtApplicationTests {
