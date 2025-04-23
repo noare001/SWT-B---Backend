@@ -15,7 +15,7 @@ WORKDIR /build
 COPY . .
 
 # Baue das Projekt
-RUN mvn clean package -DskipTests
+RUN mvn -pl mqtt-connector -am clean package -DskipTests
 
 # 🏁 STAGE 2: Nur JAR + schlankes Java 21 Runtime Image
 FROM openjdk:21-jdk-slim
