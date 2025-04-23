@@ -45,6 +45,7 @@ release:
   script:
     - cd $PROJECT
     - mvn $MAVEN_CLI_OPTS package
+    - echo "Ich war hier"
     - echo "$CI_JOB_TOKEN" | docker login ghcr.io -u gitlab-ci-token --password-stdin
     - export REPO_LOWERCASE=$(echo "$CI_PROJECT_PATH" | tr '[:upper:]' '[:lower:]')
     - docker build -t ghcr.io/$REPO_LOWERCASE/$PROJECT:$CI_COMMIT_SHA .
