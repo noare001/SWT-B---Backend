@@ -15,7 +15,7 @@ jobs:
         os: [ubuntu-latest]
         jdk: [24]
         project:
-          - backendswt
+          - backend-stadt
           - mqtt-connector
           # This is a list of all projects that should be built and pushed.
           # YOU NEED TO UPDATE THIS LIST WHEN YOU ADD A NEW PROJECT AND WITH

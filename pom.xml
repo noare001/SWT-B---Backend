@@ -11,8 +11,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>BackendSWT</module>
-        <module>kidsapp-endpoints</module>
+        <module>backend-stadt</module>
+        <module>kidsapp-application</module>
         <module>mqtt-connector</module>
     </modules>
 

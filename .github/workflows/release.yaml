@@ -20,7 +20,7 @@ jobs:
       matrix:
         jdk: [22]
         project:
-          - backendswt
+          - backend-stadt
           - mqtt-connector
     steps:
       - name: Checkout
