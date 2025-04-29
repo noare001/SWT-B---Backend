@@ -12,6 +12,7 @@
 
     <modules>
         <module>BackendSWT</module>
+        <module>kidsapp-endpoints</module>
         <module>mqtt-connector</module>
     </modules>
 
