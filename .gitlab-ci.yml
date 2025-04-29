@@ -1,0 +1,65 @@
+stages:
+  - verify
+  - build
+  - release
+
+variables:
+  MAVEN_CLI_OPTS: "-B -U"
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_TLS_CERTDIR: ""
+
+default:
+  image: docker:24.0.5-cli
+  services:
+    - name: docker:24.0.5-dind
+      alias: docker
+  tags:
+    - docker
+
+verify:
+  image: maven:3.9.4-eclipse-temurin-21
+  stage: verify
+  script:
+    - mvn $MAVEN_CLI_OPTS verify
+
+# 🔨 Maven Build separat
+build:
+  image: maven:3.9.4-eclipse-temurin-21
+  stage: build
+  parallel:
+    matrix:
+      - PROJECT: mqtt-connector
+      - PROJECT: backendswt
+  script:
+    - mvn $MAVEN_CLI_OPTS -pl $PROJECT -am clean package -DskipTests
+  artifacts:
+    paths:
+      - $PROJECT/target/*.jar
+    expire_in: 15 min
+
+# 🐳 Docker Build + Push separat
+release:
+  stage: release
+  image: docker:24.0.5-cli
+  services:
+    - name: docker:24.0.5-dind
+      alias: docker
+  parallel:
+    matrix:
+      - PROJECT: mqtt-connector
+      - PROJECT: backendswt
+  script:
+    - export IMAGE_NAME="registry.gitlab.com/$CI_PROJECT_PATH/$PROJECT"
+    - export IMAGE_TAG="$CI_COMMIT_SHORT_SHA"
+
+    # Docker-Build mit JAR aus Artifact
+    - cp $PROJECT/target/*.jar app.jar
+    - docker build -f Dockerfile -t $IMAGE_NAME:$IMAGE_TAG .
+
+    # Push
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+    - docker push $IMAGE_NAME:$IMAGE_TAG
+  dependencies:
+    - build
+  only:
+    - main

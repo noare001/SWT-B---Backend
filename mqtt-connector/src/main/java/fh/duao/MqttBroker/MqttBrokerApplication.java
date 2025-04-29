@@ -5,11 +5,12 @@ import io.moquette.broker.config.MemoryConfig;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.Properties;
 
-@SpringBootApplication
+@Service
 public class MqttBrokerApplication {
 
     private Server mqttBroker;
