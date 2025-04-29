@@ -54,9 +54,9 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<executions>
 					<execution>
-						<configuration>
-							<mainClass>fh.duao.MqttBroker.ApplicationServer</mainClass>
-						</configuration>
+						<goals>
+								<goal>repackage</goal>
+						</goals>
 					</execution>
 				</executions>
 			</plugin>
