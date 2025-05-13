@@ -6,16 +6,15 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "Träger") // Name der Tabelle in der DB
+@Table(name = "Carrier") // Name der Tabelle in der DB
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Traeger { // Klassenname in Java
+public class Carrier { // Klassenname in Java
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,40 +24,40 @@ public class Traeger { // Klassenname in Java
     @Column(name = "Name")
     private String name;
 
-    @Column(name = "Straße")
-    private String strasse;
+    @Column(name = "Street")
+    private String street;
 
-    @Column(name = "Ort")
-    private String ort;
+    @Column(name = "City")
+    private String city;
 
-    @Column(name = "PLZ")
-    private Integer plz;
+    @Column(name = "PostalCode")
+    private Integer postalCode;
 
-    @Column(name = "TrägerArt")
-    private String traegerArt;
+    @Column(name = "CarrierType")
+    private String carrierType;
 
-    @Column(name = "Kontaktperson")
-    private String kontaktperson;
+    @Column(name = "ContactPerson")
+    private String contactPerson;
 
-    @Column(name = "Telefonnummer")
-    private String telefonnummer;
+    @Column(name = "PhoneNumber")
+    private String phoneNumber;
 
-    @Column(name = "E-Mail")
+    @Column(name = "Email")
     private String email;
 
     @Column(name = "Link")
     private String link;
 
-    @OneToMany(mappedBy = "traeger", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<Anbieter> anbieterList;
+    @OneToMany(mappedBy = "carrier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Set<Provider> providers;
 
     // equals() und hashCode() basierend auf id empfohlen
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Traeger traeger = (Traeger) o;
-        return id != null && id.equals(traeger.id);
+        Carrier carrier = (Carrier) o;
+        return id != null && id.equals(carrier.id);
     }
 
     @Override

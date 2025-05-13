@@ -6,8 +6,6 @@ import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
-import java.util.Objects;
-
 @Entity
 @Table(name = "Filter")
 @Getter
@@ -17,66 +15,63 @@ import java.util.Objects;
 public class Filter {
 
     @Id
-    @Column(name = "AngebotsId")
-    private Integer angebotsId;
+    @Column(name = "OfferId")
+    private Integer offerId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "AngebotsId")
-    private Angebot angebot;
+    @JoinColumn(name = "OfferId")
+    private Offer offer;
 
-    @Column(name = "Kinder_und_Jugendtreffs_Jugendzentren")
-    private Boolean kinderUndJugendtreffsJugendzentren;
+    @Column(name = "YouthCenters")
+    private Boolean youthCenters;
 
-    @Column(name = "Ferienangebote")
-    private Boolean ferienangebote;
+    @Column(name = "HolidayOffers")
+    private Boolean holidayOffers;
 
-    @Column(name = "Spielen_lernen_und_erleben")
-    private Boolean spielenLernenUndErleben;
+    @Column(name = "PlayLearnAndExperience")
+    private Boolean playLearnAndExperience;
 
-    @Column(name = "Sport_und_Bewegung")
-    private Boolean sportUndBewegung;
+    @Column(name = "SportAndExercise")
+    private Boolean sportAndExercise;
 
-    @Column(name = "Engagement_und_Ehrenamt")
-    private Boolean engagementUndEhrenamt;
+    @Column(name = "EngagementAndVolunteering")
+    private Boolean engagementAndVolunteering;
 
-    @Column(name = "Kreativitaet_und_Kultur")
-    private Boolean kreativitaetUndKultur;
+    @Column(name = "CreativityAndCulture")
+    private Boolean creativityAndCulture;
 
-    @Column(name = "Parks_und_Spielplaetze")
-    private Boolean parksUndSpielplaetze;
+    @Column(name = "ParksAndPlaygrounds")
+    private Boolean parksAndPlaygrounds;
 
-    @Column(name = "Feste_und_Maerkte")
-    private Boolean festeUndMaerkte;
+    @Column(name = "FestivalsAndMarkets")
+    private Boolean festivalsAndMarkets;
 
-    @Column(name = "Weitere_Angebote_Freizeit")
-    private Boolean weitereAngeboteFreizeit;
+    @Column(name = "OtherOffersLeisure")
+    private Boolean otherOffersLeisure;
 
-    @Column(name = "KITA")
-    private Boolean kita;
+    @Column(name = "Daycare")
+    private Boolean daycare;
 
-    @Column(name = "Kindertagespflege")
-    private Boolean kindertagespflege;
-
-    @Column(name = "Notfallbetreuung")
-    private Boolean notfallbetreuung;
+    @Column(name = "EmergencyCare")
+    private Boolean emergencyCare;
 
     @Column(name = "Babysitter")
     private Boolean babysitter;
 
-    @Column(name = "Weitere_Angebote_Betreuung")
-    private Boolean weitereAngeboteBetreuung;
+    @Column(name = "OtherOffersCare")
+    private Boolean otherOffersCare;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Filter filter = (Filter) o;
-        return angebotsId != null && angebotsId.equals(filter.angebotsId);
+        return offerId != null && offerId.equals(filter.offerId);
     }
 
     @Override
     public int hashCode() {
-        return angebotsId != null ? angebotsId.hashCode() : getClass().hashCode();
+        return offerId != null ? offerId.hashCode() : getClass().hashCode();
     }
 }
