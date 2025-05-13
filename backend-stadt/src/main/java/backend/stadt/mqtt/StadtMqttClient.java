@@ -17,6 +17,7 @@ public class StadtMqttClient implements MqttCallback {
         client.connect();
         client.subscribe("event/add");
         client.subscribe("event/update");
+        client.subscribe("loadData");
         System.out.println("Subscribed to event/add");
     }
 
@@ -25,8 +26,17 @@ public class StadtMqttClient implements MqttCallback {
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) {
+    public void messageArrived(String topic, MqttMessage message) throws MqttException {
+        switch (topic) {
+            case "loadData": publish("fillCache", getData()); break;
+            default: System.out.println("Unknown topic: " + topic);
+        }
         System.out.println("Message received on topic " + topic + ": " + new String(message.getPayload()));
+    }
+
+    public String getData() {
+        //Muss noch implementiert werden
+        return "Luke, i am your data";
     }
 
     @Override

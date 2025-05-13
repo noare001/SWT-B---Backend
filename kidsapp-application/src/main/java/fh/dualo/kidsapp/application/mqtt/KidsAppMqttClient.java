@@ -1,5 +1,7 @@
 package fh.dualo.kidsapp.application.mqtt;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -8,8 +10,11 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+import java.util.HashMap;
+
 @Service
-public class KidsAppMqttClient implements MqttCallback{
+public class    KidsAppMqttClient implements MqttCallback{
 
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "kidsapp-client";
@@ -21,8 +26,14 @@ public class KidsAppMqttClient implements MqttCallback{
         client.connect();
         client.subscribe("event/add");
         client.subscribe("event/update");
-        System.out.println("Subscribed to event/add");
+        client.subscribe("fillCache");
     }
+
+    @PostConstruct
+    public void setup() throws MqttException {
+       sendMessage("loadData", "");
+    }
+
     public void sendMessage(String topic, String payload) throws MqttException {
         MqttMessage message = new MqttMessage(payload.getBytes());
         client.publish(topic, message);
