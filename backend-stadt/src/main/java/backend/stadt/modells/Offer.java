@@ -31,6 +31,15 @@ public class Offer {
     @Column(name = "Name")
     private String name;
 
+    @Column(name = "Street")
+    private String street;
+
+    @Column(name = "City")
+    private String city;
+
+    @Column(name = "PostalCode")
+    private Integer postalCode;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ProviderID", referencedColumnName = "ID")
     private Provider provider;

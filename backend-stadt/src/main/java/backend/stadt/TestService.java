@@ -7,8 +7,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestService {
 
-    @Autowired
     private TestRepository testRepository;
+
+    @Autowired
+    TestService(TestRepository testRepository) {
+        this.testRepository = testRepository;
+
+    }
 
     public Iterable<TestEntity> findAll() {
         return testRepository.findAll();
