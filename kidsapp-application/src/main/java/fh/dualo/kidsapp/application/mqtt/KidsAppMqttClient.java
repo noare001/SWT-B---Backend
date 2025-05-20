@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 
 @Service
-public class    KidsAppMqttClient implements MqttCallback{
+public class KidsAppMqttClient implements MqttCallback{
 
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "kidsapp-client";

@@ -1,6 +1,6 @@
 package fh.dualo.kidsapp.application.controller;
 
-import fh.dualo.kidsapp.application.cache.KidsAppCache;
+import fh.dualo.kidsapp.application.cache.KidsAppDataCache;
 import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,12 +14,12 @@ import java.util.Map;
 @RequestMapping("/api")
 public class KidsAppController {
 
-    private KidsAppCache appCache;
+    private KidsAppDataCache appCache;
     private KidsAppMqttClient mqttClient;
     private WebClient webClient;
 
     @Autowired
-    public KidsAppController(KidsAppCache appCache, KidsAppMqttClient mqttClient) {
+    public KidsAppController(KidsAppDataCache appCache, KidsAppMqttClient mqttClient) {
         this.appCache = appCache;
         this.mqttClient = mqttClient;
         webClient = WebClient.create();
