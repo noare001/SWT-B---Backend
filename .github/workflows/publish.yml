@@ -1,0 +1,62 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - 'v*'  # z. B. v1.0.0
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - backend-stadt
+          - mqtt-connector
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: lower-repo
+        name: Convert name of repository to lowercase
+        run: |
+          echo "repository=${GITHUB_REPOSITORY@L}" >> $GITHUB_OUTPUT
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3.4.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker Container Metadata
+        id: metadata
+        uses: docker/metadata-action@v5.7.0
+        with:
+          images: ghcr.io/${{ steps.lower-repo.outputs.repository }}/${{ matrix.project }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Pull image from release workflow
+        run: |
+          docker pull ghcr.io/${{ steps.lower-repo.outputs.repository }}/${{ matrix.project }}:${{ github.sha }}
+
+      - name: Retag with version and push
+        run: |
+          docker tag ghcr.io/${{ steps.lower-repo.outputs.repository }}/${{ matrix.project }}:${{ github.sha }} \
+                     ghcr.io/${{ steps.lower-repo.outputs.repository }}/${{ matrix.project }}:${{ github.ref_name }}
+
+          docker push ghcr.io/${{ steps.lower-repo.outputs.repository }}/${{ matrix.project }}:${{ github.ref_name }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
