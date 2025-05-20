@@ -50,9 +50,6 @@ public class    KidsAppMqttClient implements MqttCallback{
     @Override
     public void deliveryComplete(IMqttDeliveryToken deliveryToken) {
     }
-
-
-
     @PreDestroy
     public void destroy(){
         try{
