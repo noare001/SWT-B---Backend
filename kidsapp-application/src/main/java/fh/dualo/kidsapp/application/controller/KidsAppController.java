@@ -28,7 +28,9 @@ public class KidsAppController {
     public String searchOffeqr(@RequestParam String searchString) {
         return appCache.getOffer(searchString);
     }
-
+    /**
+     * Bsp: localhost:8090/api/login?name=lukes&password=lukes
+     */
     @GetMapping
     @RequestMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestParam("name") String name, @RequestParam("password") String password) {
@@ -44,6 +46,9 @@ public class KidsAppController {
         return ResponseEntity.ok(result);
     }
 
+    /**
+     * Bsp: localhost:8090/api/register?name=lukes&password=lukes&email=lukesmail@mail.de
+     */
     @GetMapping
     @RequestMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
