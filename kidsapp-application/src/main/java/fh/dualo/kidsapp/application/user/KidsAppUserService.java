@@ -1,10 +1,8 @@
 package fh.dualo.kidsapp.application.user;
 
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -15,16 +13,12 @@ import java.util.Map;
 public class KidsAppUserService {
 
     private WebClient webClient;
-    private JwtService jwtService;
-
-    @Autowired
-    public KidsAppUserService(JwtService jwtService) {
-        this.jwtService = jwtService;
-    }
+    private JwtUtil jwtUtil;
 
     @PostConstruct
     public void init() {
         webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt").build();
+        jwtUtil = new JwtUtil();
     }
 
     public Map<String, Object> register(String password, String username, String email) {
@@ -77,11 +71,10 @@ public class KidsAppUserService {
     }
 
     private Map<String, Object> handleResponse(Map<String, Object> map) {
-        if (map.containsKey("error")) {
-            // 404 ohne Body
+        if (map == null || map.containsKey("error")) {
             return null;
         }
-        map.put("jwt", jwtService.generateToken(map));
+        map.put("jwt", jwtUtil.generateToken(map));
         return map;
     }
 }

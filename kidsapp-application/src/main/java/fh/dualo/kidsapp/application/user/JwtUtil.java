@@ -3,21 +3,20 @@ package fh.dualo.kidsapp.application.user;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
-import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
 
-@Service
-public class JwtService
+
+public class JwtUtil
 {
 
     private final SecretKey secretKey;
     private final JwtParser parser;
 
-    public JwtService() {
+    public JwtUtil() {
         this.secretKey = Jwts.SIG.HS256.key().build();
         this.parser = Jwts.parser().verifyWith(secretKey).build();
     }
