@@ -1,4 +1,4 @@
-package backend.stadt.jwt;
+package fh.dualo.kidsapp.application.user;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;

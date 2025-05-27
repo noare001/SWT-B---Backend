@@ -2,12 +2,11 @@ package fh.dualo.kidsapp.application.controller;
 
 import fh.dualo.kidsapp.application.cache.KidsAppCache;
 import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
+import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -16,35 +15,53 @@ public class KidsAppController {
 
     private KidsAppCache appCache;
     private KidsAppMqttClient mqttClient;
-    private WebClient webClient;
+    private KidsAppUserService userService;
 
     @Autowired
-    public KidsAppController(KidsAppCache appCache, KidsAppMqttClient mqttClient) {
+    public KidsAppController(KidsAppUserService userService, KidsAppCache appCache, KidsAppMqttClient mqttClient) {
         this.appCache = appCache;
         this.mqttClient = mqttClient;
-        webClient = WebClient.create();
+        this.userService = userService;
     }
 
     @GetMapping
     public String searchOffeqr(@RequestParam String searchString) {
         return appCache.getOffer(searchString);
     }
-
+    /**
+     * Bsp: localhost:8090/api/login?name=lukes&password=lukes
+     */
     @GetMapping
     @RequestMapping("/login")
-    public String login(@RequestParam("name") String name, @RequestParam("password") String password){
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("name", name);
-        payload.put("password", password);
+    public ResponseEntity<Map<String, Object>> login(@RequestParam("name") String name, @RequestParam("password") String password) {
 
-        return webClient.post()
-                .uri("http://localhost:8082/api/stadt")
-                .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(payload)
-                .retrieve()
-                .bodyToMono(String.class)
-                .block(); // block() für synchronen Aufruf – in REST-Controllern üblich
+        // block() erhält entweder eine Map oder null (bei Mono.empty())
+        Map<String, Object> result = userService.login(password, name);
 
+        if (result == null) {
+            // 404 ohne Body
+            return ResponseEntity.notFound().build();
+        }
+        // 200 OK mit Body
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Bsp: localhost:8090/api/register?name=lukes&password=lukes&email=lukesmail@mail.de
+     */
+    @GetMapping
+    @RequestMapping("/register")
+    public ResponseEntity<Map<String, Object>> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
+        System.out.println("REGISTER IN STADT");
+        // block() erhält entweder eine Map oder null (bei Mono.empty())
+        Map<String, Object> result = userService.register(password, name,email);
+
+        if (result == null) {
+            // 404 ohne Body
+            return ResponseEntity.notFound().build();
+        }
+        // 200 OK mit Body
+        return ResponseEntity.ok(result);
     }
 }
 
