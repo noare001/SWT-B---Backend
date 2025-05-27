@@ -35,7 +35,7 @@ public class UserService {
         newUser.setName(username);
         newUser.setPassword(hashedPassword);
         newUser.setEmail(email);
-
+        newUser.setRole(Role.USER);
         return userRepository.save(newUser);
     }
 
