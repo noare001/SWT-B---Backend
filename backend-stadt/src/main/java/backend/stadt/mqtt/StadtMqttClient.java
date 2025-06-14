@@ -17,7 +17,7 @@ public class StadtMqttClient implements MqttCallback {
         client.connect();
         client.subscribe("event/add");
         client.subscribe("event/update");
-        client.subscribe("loadData");
+        client.subscribe("cache/request");
         System.out.println("Subscribed to event/add");
     }
 
@@ -28,14 +28,14 @@ public class StadtMqttClient implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
         switch (topic) {
-            case "loadData": publish("fillCache", getData()); break;
+            case "cache/request": publish("cache/data", getData()); break;
             default: System.out.println("Unknown topic: " + topic);
         }
         System.out.println("Message received on topic " + topic + ": " + new String(message.getPayload()));
     }
 
     public String getData() {
-        //Muss noch implementiert werden
+        //ToDo um dass Chache zu fillen. Hier müssen alle Offer Daten als JSON-String übertragen werden
         return "Luke, i am your data";
     }
 

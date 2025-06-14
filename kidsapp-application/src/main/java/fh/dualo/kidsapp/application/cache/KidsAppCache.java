@@ -28,9 +28,14 @@ public class KidsAppCache extends KidsAppData {
         cache = Collections.synchronizedMap(new HashMap<>());
     }
 
-    public void loadData(String data){
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.convertValue(data,Map.class);
+    public void fillCache(String jsonString){
+        //ToDo Hier sollen die Daten die von der Stadt kommen ordentlich in die cache rein. Vll ist der Setter darunter nötig idk
+
+
+    }
+
+    private void setCache(Map<String,String> newCache){
+        cache = Collections.synchronizedMap(newCache);
     }
 
     public String getOffer(String key) {

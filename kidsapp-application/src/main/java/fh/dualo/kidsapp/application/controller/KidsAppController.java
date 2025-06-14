@@ -1,12 +1,16 @@
 package fh.dualo.kidsapp.application.controller;
 
 import fh.dualo.kidsapp.application.cache.KidsAppCache;
+import fh.dualo.kidsapp.application.model.AnmeldeDTO;
+import fh.dualo.kidsapp.application.model.OfferDTO;
+import fh.dualo.kidsapp.application.model.VorschauDTO;
 import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
 import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -62,6 +66,43 @@ public class KidsAppController {
         }
         // 200 OK mit Body
         return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Bsp: localhost:8090/api/anmelden
+     */
+    @PostMapping
+    @RequestMapping("/anmelden")
+    public ResponseEntity<String> register(@RequestBody AnmeldeDTO anmeldeDaten) {
+        //ToDo JWT verifizieren und Benutzer ID rauslesen. Prozess für die Anmeldung starten. ID des neuen Anmelde-Eintrags zurückgeben
+        System.out.println(anmeldeDaten.getJwt());
+        System.out.println(anmeldeDaten.getOfferId());
+        return ResponseEntity.ok("AnmeldeID");
+    }
+    /**
+     * Es Werden alle Offer in einer Liste zurückgegeben, die zum suchschlüssel Passen.
+     * 'start' und 'end' legen fest, die wievielten Offer die zur SUchanfrage pasen, zurücgegebn werden sollten.
+     * Bsp: localhost:8090/api/search?start=1&end=20
+     */
+    @PostMapping
+    @RequestMapping("/search")
+    public ResponseEntity<List<VorschauDTO>> register(@RequestParam("key") String key, @RequestParam("start") int start, @RequestParam("end") int end) {
+        //ToDo VorschauDTO muss angepasst werden. Nur die nötigen daten eines Offers
+        if((end-start) > 20 || (end-start) < 1){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(List.of(null));
+    }
+
+    /**
+     * Returnt alle Daten zu dem gesuchten Offer
+     * Bsp: localhost:8090/api/offer?id=23455
+     */
+    @GetMapping
+    @RequestMapping("/offer")
+    public ResponseEntity<OfferDTO> getOffer(@RequestParam("id") String id) {
+        //ToDo ja nh
+        return ResponseEntity.ok(null);
     }
 }
 

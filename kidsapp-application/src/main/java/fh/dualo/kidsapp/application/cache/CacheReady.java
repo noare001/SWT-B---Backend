@@ -11,7 +11,7 @@ public class CacheReady extends State {
 
     @Override
     public String getOffer(String key) {
-        // Implementierung kommt hier hin
+        //ToDo alle die zum key passen. Ist also nicht nur das hier.
         return cache.get(key);
     }
 }

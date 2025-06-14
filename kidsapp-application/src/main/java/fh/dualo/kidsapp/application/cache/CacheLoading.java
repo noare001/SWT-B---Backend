@@ -9,7 +9,7 @@ public class CacheLoading extends State {
 
     @Override
     public String getOffer(String key) {
-        // Implementierung kommt hier hin
-        return null;
+        // Basically das
+        return dataService.getOffer(key);
     }
 }
