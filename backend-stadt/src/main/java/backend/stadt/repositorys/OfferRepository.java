@@ -14,4 +14,5 @@ public interface OfferRepository extends JpaRepository<Offer, Long> {
     List<Offer> findByPublished(Boolean published);
 
     Offer findByOfferId(Integer offerId);
+
 }

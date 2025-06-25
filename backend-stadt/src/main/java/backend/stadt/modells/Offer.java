@@ -4,6 +4,8 @@ import backend.stadt.enums.FilterCategory;
 import backend.stadt.enums.OfferType;
 import backend.stadt.enums.TargetAudience;
 import backend.stadt.helperClasses.TimeRange;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -50,6 +52,7 @@ public class Offer {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ProviderID", referencedColumnName = "ID")
+    @JsonIgnore
     private Provider provider;
 
     @ElementCollection(targetClass = OfferType.class)
@@ -115,7 +118,10 @@ public class Offer {
     @Column(name = "Languages")
     private List<String> languages;
 
-
+    @JsonProperty("providerId")
+    public Integer getProviderId(){
+        return provider.getId();
+    }
     // equals() und hashCode() basierend auf angebotsId empfohlen
     @Override
     public boolean equals(Object o) {

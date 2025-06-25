@@ -7,6 +7,8 @@ import backend.stadt.repositorys.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DatabaseService {
     private OfferRepository offerRepository;
@@ -18,7 +20,7 @@ public class DatabaseService {
         this.providerRepository = providerRepository;
     }
 
-    public Iterable<Offer> getOffers() { return offerRepository.findAll(); }
+    public List<Offer> getOffers() { return offerRepository.findAll(); }
     public Offer getOfferById(int id) { return offerRepository.findByOfferId(id); }
 
     public Iterable<Provider> getProviders() { return providerRepository.findAll(); }
