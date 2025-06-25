@@ -11,5 +11,5 @@ public interface ProviderRepository extends JpaRepository<Provider, Long> {
     @Override
     List<Provider> findAll();
 
-    Provider findByProviderId(Integer providerId);
+    Provider findById(Integer Id);
 }

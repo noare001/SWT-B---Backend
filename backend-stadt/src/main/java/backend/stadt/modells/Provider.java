@@ -45,9 +45,6 @@ public class Provider {
     @Column(name = "Link")
     private String link;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CarrierId", referencedColumnName = "ID")
-    private Carrier carrier;
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private Set<Offer> offers;

@@ -1,5 +1,9 @@
 package backend.stadt.modells;
 
+import backend.stadt.enums.FilterCategory;
+import backend.stadt.enums.OfferType;
+import backend.stadt.enums.TargetAudience;
+import backend.stadt.helperClasses.TimeRange;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +11,11 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.DayOfWeek;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Entity
 @Table(name = "Offer")
@@ -44,11 +52,23 @@ public class Offer {
     @JoinColumn(name = "ProviderID", referencedColumnName = "ID")
     private Provider provider;
 
-    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
-    private OfferType offerType;
+    @ElementCollection(targetClass = OfferType.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "Offer_OfferTypes", joinColumns = @JoinColumn(name = "OfferId"))
+    @Column(name = "OfferType")
+    private Set<OfferType> offerTypes;
 
-    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
-    private TargetGroup targetGroup;
+    @Column(name = "OtherOfferType")
+    private String otherOfferType;
+
+    @ElementCollection(targetClass = TargetAudience.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "OfferTargetGroups", joinColumns = @JoinColumn(name = "OfferId"))
+    @Column(name = "Audience")
+    private List<TargetAudience> targetGroups;
+
+    @Column(name = "Recurring")
+    private Boolean recurring;
 
     @Column(name = "StartDate")
     private LocalDate startDate;
@@ -56,11 +76,14 @@ public class Offer {
     @Column(name = "EndDate")
     private LocalDate endDate;
 
-    @Column(name = "StartTime")
-    private LocalTime startTime;
+    @ElementCollection
+    @CollectionTable(name = "OfferEventSchedule", joinColumns = @JoinColumn(name = "OfferId"))
+    @MapKeyEnumerated(EnumType.STRING)
+    @MapKeyColumn(name = "DayOfWeek")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "TimeRange")
+    private Map<DayOfWeek, TimeRange> eventSchedule = new EnumMap<>(DayOfWeek.class);
 
-    @Column(name = "EndTime")
-    private LocalTime endTime;
 
     @Column(name = "RegistrationRequired")
     private Boolean registrationRequired;
@@ -75,11 +98,11 @@ public class Offer {
     @Column(name = "Cost")
     private Double cost; // Besser: BigDecimal für Währungen
 
-    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
-    private Filter filter;
-
-    @OneToOne(mappedBy = "offer", cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true, orphanRemoval = true)
-    private Languages languages;
+    @ElementCollection(targetClass = FilterCategory.class)
+    @Enumerated(EnumType.STRING)
+    @CollectionTable(name = "OfferFilters", joinColumns = @JoinColumn(name = "OfferId"))
+    @Column(name = "FilterCategory")
+    private Set<FilterCategory> filters;
 
     @Column(name = "MinAge")
     private Integer minAge;
@@ -87,34 +110,11 @@ public class Offer {
     @Column(name = "MaxAge")
     private Integer maxAge;
 
-    // Convenience Methoden (optional)
-    public void setOfferTypeDetails(OfferType offerType) {
-        if (offerType != null) {
-            offerType.setOffer(this);
-        }
-        this.offerType = offerType;
-    }
+    @ElementCollection
+    @CollectionTable(name = "OfferLanguages", joinColumns = @JoinColumn(name = "OfferId"))
+    @Column(name = "Languages")
+    private List<String> languages;
 
-    public void setTargetGroupDetails(TargetGroup targetGroup) {
-        if (targetGroup != null) {
-            targetGroup.setOffer(this);
-        }
-        this.targetGroup = targetGroup;
-    }
-
-    public void setFilterDetails(Filter filter) {
-        if (filter != null) {
-            filter.setOffer(this);
-        }
-        this.filter = filter;
-    }
-
-    public void setLanguagesDetails(Languages languages) {
-        if (languages != null) {
-            languages.setOffer(this);
-        }
-        this.languages = languages;
-    }
 
     // equals() und hashCode() basierend auf angebotsId empfohlen
     @Override
