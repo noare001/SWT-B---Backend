@@ -1,11 +1,15 @@
 package backend.stadt.modells;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -47,7 +51,15 @@ public class Provider {
 
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore
     private Set<Offer> offers;
+
+    @JsonProperty("providerName")
+    public Map<Integer, String> getOffers(){
+        Map<Integer,String> offerMap = new HashMap<>();
+        offers.forEach(o -> offerMap.put(o.getOfferId(), o.getName()));
+        return offerMap;
+    }
 
     // equals() und hashCode() basierend auf id empfohlen
     @Override

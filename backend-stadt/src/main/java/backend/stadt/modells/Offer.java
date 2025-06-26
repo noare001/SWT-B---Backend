@@ -118,9 +118,9 @@ public class Offer {
     @Column(name = "Languages")
     private List<String> languages;
 
-    @JsonProperty("providerId")
-    public Integer getProviderId(){
-        return provider.getId();
+    @JsonProperty("providerName")
+    public String getProviderName(){
+        return provider.getName();
     }
     // equals() und hashCode() basierend auf angebotsId empfohlen
     @Override

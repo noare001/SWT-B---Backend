@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+<header>
+    <h1>Administration</h1>
+</header>
+<main>
+    <section class="buttons">
+        <button onclick="checkStatus()">Status Abfragen</button>
+        <button onclick="fetchUserList()">User Liste</button>
+        <button onclick="fetchOfferList()">Offer Liste</button>
+        <button onclick="checkStatus()">Provider Liste</button>
+        <button onclick="checkStatus()">Anfragen Liste</button>
+    </section>
+    <section id="content-section">
+        <h2>Monitoring</h2>
+    </section>
+</main>
+
+
+
+<script>
+    let allOffers = [];
+
+    async function fetchOfferList() {
+        const res = await fetch('http://localhost:8082/admin/offer');
+        allOffers = await res.json();
+        renderOffers(allOffers);
+    }
+
+    function renderOffers(offers) {
+        const contentSection = document.getElementById('content-section');
+        contentSection.innerHTML = `
+      <h2>Offer Liste</h2>
+      <label>
+            Search:
+            <input type="text" id="offer-search" placeholder="Suche nach Offer" oninput="filterOffers()" />
+        </label>
+      ${createOfferCards(offers)}
+    `;
+    }
+
+    function filterOffers() {
+        const query = document.getElementById('offer-search').value.toLowerCase();
+        const filtered = allOffers.filter(o => {
+            return (
+                (o.name && o.name.toLowerCase().includes(query)) ||
+                (o.city && o.city.toLowerCase().includes(query)) ||
+                (o.offerId && o.offerId.toString().includes(query))
+            );
+        });
+        document.querySelector(".content-section").innerHTML = `
+        <h2>Offer Liste</h2>
+        <input type="text" id="offer-search" placeholder="Suche nach Name, Stadt oder ID..." oninput="filterOffers()" value="${query}"/>
+        ${createOfferCards(filtered)}
+    `;
+    }
+
+    function createOfferCards(offers) {
+        return offers.map(o => `
+    <div class="offer-card" onclick="this.classList.toggle('expanded')">
+      <div class="offer-summary">
+        <span><strong>#${o.offerId}</strong> – ${o.name}</span>
+        <span>${o.city ?? '-'}</span>
+        <span>${o.startDate ?? '-'} – ${o.endDate ?? '-'}</span>
+      </div>
+      <div class="offer-details">
+        <div><strong>Provider ID:</strong> ${o.providerId}</div>
+        <div><strong>PLZ:</strong> ${o.postalCode}</div>
+        <div><strong>Straße:</strong> ${o.street}</div>
+        <div><strong>Registrierung:</strong> ${o.registrationRequired ? 'Ja' : 'Nein'}</div>
+        <div><strong>Kosten:</strong> ${o.cost ?? '0'} €</div>
+        <div><strong>Sprachen:</strong> ${o.languages?.join(', ') ?? '-'}</div>
+        <div><strong>Zielgruppen:</strong> ${o.targetGroups?.join(', ') ?? '-'}</div>
+        <div><strong>Weitere Infos:</strong> ${o.additionalInformation ?? '—'}</div>
+        <div><strong>Typen:</strong> ${o.offerTypes?.join(', ') ?? '-'}</div>
+      </div>
+    </div>
+  `).join('');
+    }
+
+    // Beispiel für Status-Button
+    async function checkStatus() {
+        const res = await fetch('http://localhost:8082/admin/status');
+        const text = await res.text();
+        const contentSection = document.getElementById('content-section');
+        contentSection.innerHTML = `<h2>Status</h2><pre>${text}</pre>`;
+    }
+
+    // Platzhalter für weitere Buttons
+    function fetchUserList() {
+        const section = document.getElementById('content-section');
+        section.innerHTML = "<h2>User Liste</h2><p>(Noch nicht implementiert)</p>";
+    }
+</script>
+</body>
+</html>
