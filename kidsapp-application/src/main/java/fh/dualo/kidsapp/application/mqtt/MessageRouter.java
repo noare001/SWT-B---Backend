@@ -2,8 +2,7 @@ package fh.dualo.kidsapp.application.mqtt;
 
 import fh.dualo.kidsapp.application.cache.KidsAppCache;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+
 import org.springframework.stereotype.Service;
 
 @Service

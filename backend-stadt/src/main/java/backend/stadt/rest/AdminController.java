@@ -1,6 +1,7 @@
 package backend.stadt.rest;
 
 import backend.stadt.DatabaseService;
+import backend.stadt.enums.OfferStatus;
 import backend.stadt.modells.Offer;
 import backend.stadt.modells.Provider;
 import backend.stadt.modells.AppUserDTO;
@@ -67,5 +68,12 @@ public class AdminController {
     @GetMapping("/provider")
     public ResponseEntity<List<Provider>> getProvider() {
         return ResponseEntity.ok(databaseService.getProviders());
+    }
+    @PutMapping("/offer/{id}/status/{status}")
+    public ResponseEntity<Void> updateStatus(@PathVariable("id") int id, @PathVariable("status") String newStatus) {
+        Offer offer = databaseService.getOfferById(id);
+        offer.setStatus(OfferStatus.valueOf(newStatus));
+        databaseService.saveOffer(offer);
+        return ResponseEntity.ok().build();
     }
 }

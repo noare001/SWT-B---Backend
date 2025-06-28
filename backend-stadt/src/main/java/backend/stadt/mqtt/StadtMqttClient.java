@@ -29,8 +29,8 @@ public class StadtMqttClient implements MqttCallback {
                 client = new MqttClient(BROKER_URL, CLIENT_ID, null);
                 client.setCallback(this);
                 client.connect();
-                client.subscribe("event/add");
-                client.subscribe("event/update");
+                client.subscribe("offer/add");
+                client.subscribe("offer/update");
                 client.subscribe("cache/request");
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 connected = true;
@@ -57,6 +57,7 @@ public class StadtMqttClient implements MqttCallback {
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
         switch (topic) {
             case "cache/request": publish("cache/data", getData()); break;
+            case "offer/add": publish("cache/data", getData()); break;
             default: System.out.println("Unknown topic: " + topic);
         }
         System.out.println("Message received on topic " + topic + ": " + new String(message.getPayload()));

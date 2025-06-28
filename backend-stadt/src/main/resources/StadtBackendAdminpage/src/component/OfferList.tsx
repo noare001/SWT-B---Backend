@@ -1,22 +1,33 @@
-import {use, useEffect, useState} from "react";
+import { useEffect, useState } from "react";
 
-export default function OfferList(){
-    const [search, setSearch] = useState<string>("")
-    const [offers, setOffers] = useState([])
+export default function OfferList() {
+    const [search, setSearch] = useState<string>("");
+    const [offers, setOffers] = useState([]);
 
     useEffect(() => {
+        fetchOffers();
+    }, []);
+
+    function fetchOffers() {
         fetch("/admin/offer")
             .then((res) => res.json())
             .then((data) => setOffers(data));
-    }, []);
+    }
 
-    function filter(offer) :boolean {
+    function filter(offer): boolean {
         const q = search.toLowerCase();
         return (
             (offer.name && offer.name.toLowerCase().includes(q)) ||
             (offer.city && offer.city.toLowerCase().includes(q)) ||
             (offer.offerId && offer.offerId.toString().includes(q))
         );
+    }
+
+    async function updateStatus(offerId: number, newStatus: string) {
+        await fetch(`/admin/offer/${offerId}/${newStatus}`, {
+            method: "PUT",
+        });
+        fetchOffers(); // Liste neu laden
     }
 
     return (
@@ -37,38 +48,31 @@ export default function OfferList(){
                             <span>{o.startDate ?? "-"} – {o.endDate ?? "-"}</span>
                         </div>
                         <div className="offer-details">
-                            <div>
-                                <strong>Provider ID:</strong> {o.providerId}
-                            </div>
-                            <div>
-                                <strong>PLZ:</strong> {o.postalCode}
-                            </div>
-                            <div>
-                                <strong>Straße:</strong> {o.street}
-                            </div>
-                            <div>
-                                <strong>Registrierung:</strong> {o.registrationRequired ? "Ja" : "Nein"}
-                            </div>
-                            <div>
-                                <strong>Kosten:</strong> {o.cost ?? "0"} €
-                            </div>
-                            <div>
-                                <strong>Sprachen:</strong> {o.languages?.join(", ") ?? "-"}
-                            </div>
-                            <div>
-                                <strong>Zielgruppen:</strong> {o.targetGroups?.join(", ") ?? "-"}
-                            </div>
-                            <div>
-                                <strong>Weitere Infos:</strong> {o.additionalInformation ?? "—"}
-                            </div>
-                            <div>
-                                <strong>Typen:</strong> {o.offerTypes?.join(", ") ?? "-"}
-                            </div>
+                            <div><strong>Provider:</strong> {o.providerName}</div>
+                            <div><strong>PLZ:</strong> {o.postalCode}</div>
+                            <div><strong>Straße:</strong> {o.street}</div>
+                            <div><strong>Registrierung:</strong> {o.registrationRequired ? "Ja" : "Nein"}</div>
+                            <div><strong>Kosten:</strong> {o.cost ?? "0"} €</div>
+                            <div><strong>Sprachen:</strong> {o.languages?.join(", ") ?? "-"}</div>
+                            <div><strong>Zielgruppen:</strong> {o.targetGroups?.join(", ") ?? "-"}</div>
+                            <div><strong>Weitere Infos:</strong> {o.additionalInformation ?? "—"}</div>
+                            <div><strong>Typen:</strong> {o.offerTypes?.join(", ") ?? "-"}</div>
+                            <div><strong>Filter:</strong> {o.filters?.join(", ") ?? "-"}</div>
+
+                            {o.status === "PROCESSING" && (
+                                <div style={{ marginTop: "10px" }}>
+                                    <button onClick={() => updateStatus(o.offerId, "ACCEPTED")}>
+                                        ✅ Akzeptieren
+                                    </button>
+                                    <button onClick={() => updateStatus(o.offerId, "REJECTED")} style={{ marginLeft: "10px" }}>
+                                        ❌ Ablehnen
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 ))}
             </div>
-
         </div>
-    )
+    );
 }

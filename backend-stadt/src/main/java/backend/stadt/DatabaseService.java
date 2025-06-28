@@ -37,6 +37,9 @@ public class DatabaseService {
     public List<Offer> getOffers() { return offerRepository.findAll(); }
     public Offer getOfferById(int id) { return offerRepository.findByOfferId(id); }
 
+    public void saveOffer(Offer offer){
+        offerRepository.save(offer);
+    }
     public List<Provider> getProviders() { return providerRepository.findAll(); }
     public Provider getProviderById(int id) { return providerRepository.findById(id); }
 }

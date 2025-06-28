@@ -1,6 +1,7 @@
 package backend.stadt.modells;
 
 import backend.stadt.enums.FilterCategory;
+import backend.stadt.enums.OfferStatus;
 import backend.stadt.enums.OfferType;
 import backend.stadt.enums.TargetAudience;
 import backend.stadt.helperClasses.TimeRange;
@@ -32,12 +33,6 @@ public class Offer {
     @Column(name = "OfferId")
     private Integer offerId;
 
-    @Column(name = "EditingFinished")
-    private Boolean editingFinished;
-
-    @Column(name = "Published")
-    private Boolean published;
-
     @Column(name = "Name")
     private String name;
 
@@ -60,9 +55,6 @@ public class Offer {
     @CollectionTable(name = "Offer_OfferTypes", joinColumns = @JoinColumn(name = "OfferId"))
     @Column(name = "OfferType")
     private Set<OfferType> offerTypes;
-
-    @Column(name = "OtherOfferType")
-    private String otherOfferType;
 
     @ElementCollection(targetClass = TargetAudience.class)
     @Enumerated(EnumType.STRING)
@@ -87,7 +79,6 @@ public class Offer {
     @Column(name = "TimeRange")
     private Map<DayOfWeek, TimeRange> eventSchedule = new EnumMap<>(DayOfWeek.class);
 
-
     @Column(name = "RegistrationRequired")
     private Boolean registrationRequired;
 
@@ -95,17 +86,18 @@ public class Offer {
     @Column(name = "AdditionalInformation")
     private String additionalInformation;
 
-    @Column(name = "RegistrationLink")
-    private String registrationLink;
-
     @Column(name = "Cost")
-    private Double cost; // Besser: BigDecimal für Währungen
+    private Double cost;
 
     @ElementCollection(targetClass = FilterCategory.class)
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "OfferFilters", joinColumns = @JoinColumn(name = "OfferId"))
     @Column(name = "FilterCategory")
     private Set<FilterCategory> filters;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "Status")
+    private OfferStatus status;
 
     @Column(name = "MinAge")
     private Integer minAge;
