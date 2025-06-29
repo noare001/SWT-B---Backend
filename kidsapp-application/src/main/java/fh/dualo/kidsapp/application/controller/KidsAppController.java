@@ -7,6 +7,7 @@ import fh.dualo.kidsapp.application.model.VorschauDTO;
 import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
 import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +29,18 @@ public class KidsAppController {
         this.userService = userService;
     }
 
+    /**
+     * Nur zum testen. Abfragen des gesamten caches
+     * localhost:8090/api/cache
+     * @return cache data
+     */
     @GetMapping
-    public String searchOffeqr(@RequestParam String searchString) {
-        return appCache.getOffer(searchString);
+    @RequestMapping("/cache")
+    public ResponseEntity<String> searchOffer() {
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(appCache.getOffer(""));
     }
     /**
      * Bsp: localhost:8090/api/login?name=lukes&password=lukes
@@ -86,12 +96,15 @@ public class KidsAppController {
      */
     @PostMapping
     @RequestMapping("/search")
-    public ResponseEntity<List<VorschauDTO>> register(@RequestParam("key") String key, @RequestParam("start") int start, @RequestParam("end") int end) {
+    public ResponseEntity<String> register(@RequestParam("key") String key, @RequestParam("start") int start, @RequestParam("end") int end) {
         //ToDo VorschauDTO muss angepasst werden. Nur die nötigen daten eines Offers
         if((end-start) > 20 || (end-start) < 1){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(List.of(null));
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(appCache.getOffer(""));
     }
 
     /**

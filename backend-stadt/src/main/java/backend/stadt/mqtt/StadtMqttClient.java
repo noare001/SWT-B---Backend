@@ -6,7 +6,7 @@ import org.eclipse.paho.client.mqttv3.*;
 import org.springframework.stereotype.Service;
 
 @Service
-public class StadtMqttClient implements MqttCallback {
+public class StadtMqttClient implements MqttCallbackExtended {
 
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "stadt-client";
@@ -94,4 +94,12 @@ public class StadtMqttClient implements MqttCallback {
         return false;
     }
 
+    @Override
+    public void connectComplete(boolean b, String s) {
+        try {
+            publish("stadt/online", "");
+        } catch (MqttException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

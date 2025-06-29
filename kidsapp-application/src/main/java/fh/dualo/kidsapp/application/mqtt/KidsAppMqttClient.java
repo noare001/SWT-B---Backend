@@ -42,6 +42,7 @@ public class KidsAppMqttClient implements MqttCallback{
                 client.connect();
                 client.subscribe("event/add");
                 client.subscribe("event/update");
+                client.subscribe("stadt/online");
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 sendSavedMessages();
                 connected = true;

@@ -56,14 +56,10 @@ public class DatabaseService {
 
     public String getCache() throws JsonProcessingException {
         List<Offer> offerList = offerRepository.findAllFullyLoaded();
-        Map<String, String> map = new HashMap<>();
+        Map<String, Offer> map = new HashMap<>();
         offerList.forEach(offer ->
                 {
-                    try {
-                        map.put(offer.getOfferId() + "-" + offer.getName(), mapper.writeValueAsString(offer));
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
+                    map.put(offer.getOfferId() + "-" + offer.getName(), offer);
                 }
         );
         return mapper.writeValueAsString(map);

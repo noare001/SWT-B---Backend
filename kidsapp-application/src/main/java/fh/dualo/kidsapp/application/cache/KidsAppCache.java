@@ -2,6 +2,7 @@ package fh.dualo.kidsapp.application.cache;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,16 +17,15 @@ import java.util.Map;
 @Service
 public class KidsAppCache extends KidsAppData {
 
-    private Map<String,String> cache;
 
     private KidsAppDataService dataService;
-
     private State state;
     private WebClient webClient;
 
     @Autowired
     public KidsAppCache(KidsAppDataService dataService){
         this.dataService = dataService;
+        state = new CacheLoading(dataService);
     }
     @PostConstruct
     public void init() {
@@ -33,32 +33,27 @@ public class KidsAppCache extends KidsAppData {
         fillCache();
     }
 
-    @PostConstruct
-    public void setup(){
-        cache = Collections.synchronizedMap(new HashMap<>());
-    }
-
     public void fillCache(){
-        Mono<String> cacheMono  = webClient.get().retrieve()
+        ObjectMapper mapper = new ObjectMapper();
+        state = new CacheLoading(dataService);
+        webClient.get().retrieve()
                 .bodyToMono(String.class)
                 .onErrorResume(ex -> {
-            System.err.println("Cache-Service nicht erreichbar: " + ex.getMessage());
-            return Mono.just("[]");
-        });
-        ObjectMapper objectMapper = new ObjectMapper();
-        cacheMono.subscribe(jsonString -> {
-            try {
-                cache = objectMapper.readValue(jsonString, new TypeReference<>() {});
-                System.out.println("Empfangener Cache: " + cache);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        });
+                    System.err.println("Cache-Service nicht erreichbar: " + ex.getMessage());
+                    return Mono.just("{}");
+                })
+                .map(json -> {
+                    try {
+                        return mapper.readValue(json, new TypeReference<Map<String, JsonNode>>() {});
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .subscribe(jsonMap -> {
+                    state = new CacheReady(jsonMap);
+                    System.out.println("\u001B[32mCache Erfolgreich geladen!\u001B[0m");
+                });
 
-    }
-
-    private void setCache(Map<String,String> newCache){
-        cache = Collections.synchronizedMap(newCache);
     }
 
     public String getOffer(String key) {

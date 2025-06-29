@@ -1,5 +1,6 @@
 package backend.stadt.user;
 
+import backend.stadt.helperClasses.AppUserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,11 +19,12 @@ public class UserService {
 
     }
 
-    public AppUser login(String username, String password) {
-        return userRepository.getAppUserByNameAndPassword(username, sha256Hash(password));
+    public AppUserDTO login(String username, String password) {
+        AppUser user =  userRepository.getAppUserByNameAndPassword(username, sha256Hash(password));
+        return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(),user.getProvider().getId(), user.getProvider().getName());
     }
 
-    public AppUser register(String username, String password, String email) {
+    public AppUserDTO register(String username, String password, String email) {
         if (userRepository.existsByName(username)) {
             throw new IllegalArgumentException("Benutzername bereits vergeben");
         }
@@ -31,12 +33,13 @@ public class UserService {
         String hashedPassword = sha256Hash(password);
 
         // Neues Benutzerobjekt erstellen
-        AppUser newUser = new AppUser();
-        newUser.setName(username);
-        newUser.setPassword(hashedPassword);
-        newUser.setEmail(email);
-        newUser.setRole(Role.USER);
-        return userRepository.save(newUser);
+        AppUser user = new AppUser();
+        user.setName(username);
+        user.setPassword(hashedPassword);
+        user.setEmail(email);
+        user.setRole(Role.USER);
+        userRepository.save(user);
+        return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(),user.getProvider().getId(), user.getProvider().getName());
     }
 
     public static String sha256Hash(String input) {

@@ -17,7 +17,7 @@ public class MessageRouter {
 
     public void processMessage(String topic, String payload){
         switch (topic){
-
+            case "stadt/online": cache.fillCache();break;
         }
     }
 }

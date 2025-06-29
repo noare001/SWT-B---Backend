@@ -38,13 +38,7 @@ public class AdminController {
     @GetMapping("/user")
     public List<AppUserDTO> getAllUsers() {
         return databaseService.getUser().stream().map(user -> {
-            AppUserDTO dto = new AppUserDTO();
-            dto.setId(user.getId());
-            dto.setName(user.getName());
-            dto.setEmail(user.getEmail());
-            dto.setRole(user.getRole());
-            dto.setProviderId(user.getProvider() != null ? user.getProvider().getId() : null);
-            return dto;
+            return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(),user.getProvider().getId(), user.getProvider().getName());
         }).toList();
     }
     @PutMapping("/user/{id}")

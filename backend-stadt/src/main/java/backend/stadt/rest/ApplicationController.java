@@ -1,6 +1,7 @@
 package backend.stadt.rest;
 
 import backend.stadt.DatabaseService;
+import backend.stadt.helperClasses.AppUserDTO;
 import backend.stadt.modells.Offer;
 import backend.stadt.user.AppUser;
 import backend.stadt.user.UserService;
@@ -27,12 +28,12 @@ public class ApplicationController {
 
     @GetMapping
     @RequestMapping("/login")
-    public ResponseEntity<AppUser> login(@RequestParam("name") String name, @RequestParam("password") String password) {
+    public ResponseEntity<AppUserDTO> login(@RequestParam("name") String name, @RequestParam("password") String password) {
         return ResponseEntity.ok(userService.login(name,password));
     }
     @GetMapping
     @RequestMapping("/register")
-    public ResponseEntity<AppUser> register(@RequestParam("name") String name, @RequestParam("password") String password,@RequestParam("email") String email) {
+    public ResponseEntity<AppUserDTO> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
         System.out.println("REGISTER IN STADT");
         return ResponseEntity.ok(userService.register(name,password,email));
     }
