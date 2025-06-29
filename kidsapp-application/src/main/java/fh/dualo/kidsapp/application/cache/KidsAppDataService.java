@@ -27,16 +27,7 @@ public class KidsAppDataService extends KidsAppData {
     @PostConstruct
     public void init() {
         webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt/cache").build();
-        requestCacheData();
     }
-
-    public void requestCacheData() {
-         String cache = webClient.get().retrieve()
-                .bodyToMono(String.class)
-                .block();
-        System.out.println("Cache: " + cache);
-    }
-
 
     @Override
     public String getOffer(String key) {

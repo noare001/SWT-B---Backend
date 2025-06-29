@@ -1,9 +1,13 @@
 package fh.dualo.kidsapp.application.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,10 +21,16 @@ public class KidsAppCache extends KidsAppData {
     private KidsAppDataService dataService;
 
     private State state;
+    private WebClient webClient;
 
     @Autowired
     public KidsAppCache(KidsAppDataService dataService){
         this.dataService = dataService;
+    }
+    @PostConstruct
+    public void init() {
+        webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt/cache").build();
+        fillCache();
     }
 
     @PostConstruct
@@ -28,9 +38,22 @@ public class KidsAppCache extends KidsAppData {
         cache = Collections.synchronizedMap(new HashMap<>());
     }
 
-    public void fillCache(String jsonString){
-        //ToDo Hier sollen die Daten die von der Stadt kommen ordentlich in die cache rein. Vll ist der Setter darunter nötig idk
-        System.out.println(jsonString);
+    public void fillCache(){
+        Mono<String> cacheMono  = webClient.get().retrieve()
+                .bodyToMono(String.class)
+                .onErrorResume(ex -> {
+            System.err.println("Cache-Service nicht erreichbar: " + ex.getMessage());
+            return Mono.just("[]");
+        });
+        ObjectMapper objectMapper = new ObjectMapper();
+        cacheMono.subscribe(jsonString -> {
+            try {
+                cache = objectMapper.readValue(jsonString, new TypeReference<>() {});
+                System.out.println("Empfangener Cache: " + cache);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
     }
 
