@@ -1,30 +1,41 @@
 package fh.dualo.kidsapp.application.cache;
 
 import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
+import fh.dualo.kidsapp.application.user.JwtUtil;
+import jakarta.annotation.PostConstruct;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
 @Service
-public class KidsAppDataService extends KidsAppData{
+public class KidsAppDataService extends KidsAppData {
 
     private KidsAppMqttClient mqttSubscriber;
 
-    @Autowired
-    public KidsAppDataService(KidsAppMqttClient mqttSubscriber){
+    private WebClient webClient;
+
+    public KidsAppDataService(KidsAppMqttClient mqttSubscriber) {
         this.mqttSubscriber = mqttSubscriber;
     }
 
-    public void requestCacheData() {
-        try{
-            mqttSubscriber.sendMessage("cache/request", "");
-        }catch (MqttException e){
-            e.printStackTrace();
-        }
+    @PostConstruct
+    public void init() {
+        webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt/cache").build();
+        requestCacheData();
     }
 
+    public void requestCacheData() {
+         String cache = webClient.get().retrieve()
+                .bodyToMono(String.class)
+                .block();
+        System.out.println("Cache: " + cache);
+    }
 
 
     @Override

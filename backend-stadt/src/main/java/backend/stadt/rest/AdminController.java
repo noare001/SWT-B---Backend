@@ -4,7 +4,7 @@ import backend.stadt.DatabaseService;
 import backend.stadt.enums.OfferStatus;
 import backend.stadt.modells.Offer;
 import backend.stadt.modells.Provider;
-import backend.stadt.modells.AppUserDTO;
+import backend.stadt.helperClasses.AppUserDTO;
 import backend.stadt.mqtt.StadtMqttClient;
 import backend.stadt.user.AppUser;
 import backend.stadt.user.Role;
@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")

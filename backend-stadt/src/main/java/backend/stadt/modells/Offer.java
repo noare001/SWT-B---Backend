@@ -60,7 +60,7 @@ public class Offer {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "OfferTargetGroups", joinColumns = @JoinColumn(name = "OfferId"))
     @Column(name = "Audience")
-    private List<TargetAudience> targetGroups;
+    private Set<TargetAudience> targetGroups;
 
     @Column(name = "Recurring")
     private Boolean recurring;
@@ -108,7 +108,7 @@ public class Offer {
     @ElementCollection
     @CollectionTable(name = "OfferLanguages", joinColumns = @JoinColumn(name = "OfferId"))
     @Column(name = "Languages")
-    private List<String> languages;
+    private Set<String> languages;
 
     @JsonProperty("providerName")
     public String getProviderName(){

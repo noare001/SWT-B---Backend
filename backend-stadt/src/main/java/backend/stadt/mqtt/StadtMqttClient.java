@@ -11,9 +11,10 @@ public class StadtMqttClient implements MqttCallback {
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "stadt-client";
     private MqttClient client;
+    private MessageRouter router;
 
-    public StadtMqttClient() {
-
+    public StadtMqttClient(MessageRouter router) {
+        this.router = router;
     }
 
     @PostConstruct
@@ -23,17 +24,22 @@ public class StadtMqttClient implements MqttCallback {
 
     private void connectWithRetry() {
         boolean connected = false;
-
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setAutomaticReconnect(true);
+        options.setCleanSession(true);
+        options.setKeepAliveInterval(20);
         while (!connected) {
             try {
                 client = new MqttClient(BROKER_URL, CLIENT_ID, null);
+
                 client.setCallback(this);
-                client.connect();
+                client.connect(options);
                 client.subscribe("offer/add");
                 client.subscribe("offer/update");
                 client.subscribe("cache/request");
-                System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 connected = true;
+                System.out.println("\u001B[32mVerbunden!\u001B[0m");
+                router.setMqttClient(this);
             } catch (MqttException e) {
                 System.err.println("Verbindung fehlgeschlagen: " + e.getMessage());
                 try {
@@ -54,23 +60,13 @@ public class StadtMqttClient implements MqttCallback {
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) throws MqttException {
-        switch (topic) {
-            case "cache/request": publish("cache/data", getData()); break;
-            case "offer/add": publish("cache/data", getData()); break;
-            default: System.out.println("Unknown topic: " + topic);
-        }
-        System.out.println("Message received on topic " + topic + ": " + new String(message.getPayload()));
-    }
-
-    public String getData() {
-        //ToDo um dass Chache zu fillen. Hier müssen alle Offer Daten als JSON-String übertragen werden
-        return "Luke, i am your data";
+    public void messageArrived(String topic, MqttMessage message) {
+        router.processMessage(topic, new String(message.getPayload()), this);
     }
 
     @Override
     public void connectionLost(Throwable throwable) {
-
+        System.err.println("CONNECTION LOST");
     }
 
     @Override
@@ -97,4 +93,5 @@ public class StadtMqttClient implements MqttCallback {
         }
         return false;
     }
+
 }

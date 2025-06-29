@@ -30,7 +30,7 @@ public class KidsAppCache extends KidsAppData {
 
     public void fillCache(String jsonString){
         //ToDo Hier sollen die Daten die von der Stadt kommen ordentlich in die cache rein. Vll ist der Setter darunter nötig idk
-
+        System.out.println(jsonString);
 
     }
 

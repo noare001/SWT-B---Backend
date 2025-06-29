@@ -17,7 +17,7 @@ public class MessageRouter {
 
     public void processMessage(String topic, String payload){
         switch (topic){
-            case "cache/data" -> cache.fillCache(payload);
+
         }
     }
 }

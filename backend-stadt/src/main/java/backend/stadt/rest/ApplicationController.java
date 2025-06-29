@@ -4,11 +4,14 @@ import backend.stadt.DatabaseService;
 import backend.stadt.modells.Offer;
 import backend.stadt.user.AppUser;
 import backend.stadt.user.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/stadt")
@@ -34,6 +37,11 @@ public class ApplicationController {
         return ResponseEntity.ok(userService.register(name,password,email));
     }
 
+    @GetMapping
+    @RequestMapping("/cache")
+    public ResponseEntity<String> getCache() throws JsonProcessingException {
+        return ResponseEntity.ok(databaseService.getCache());
+    }
     @GetMapping
     public ResponseEntity<List<Offer>> getOffer(){
         return ResponseEntity.ok(databaseService.getOffers());

@@ -1,4 +1,4 @@
-package backend.stadt.modells;
+package backend.stadt.helperClasses;
 
 import backend.stadt.user.Role;
 import lombok.Getter;

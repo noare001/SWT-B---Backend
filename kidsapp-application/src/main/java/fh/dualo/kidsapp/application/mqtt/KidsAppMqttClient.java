@@ -42,7 +42,6 @@ public class KidsAppMqttClient implements MqttCallback{
                 client.connect();
                 client.subscribe("event/add");
                 client.subscribe("event/update");
-                client.subscribe("cache/data");
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 sendSavedMessages();
                 connected = true;
@@ -61,7 +60,7 @@ public class KidsAppMqttClient implements MqttCallback{
 
     public void sendMessage(String topic, String payload) throws MqttException {
         MqttMessage message = new MqttMessage(payload.getBytes());
-        if(client.isConnected()){
+        if(client != null && client.isConnected()){
             client.publish(topic, message);
             System.out.println("Published: " + payload);
         }else{
