@@ -83,11 +83,13 @@ public class KidsAppController {
      */
     @PostMapping
     @RequestMapping("/anmelden")
-    public ResponseEntity<String> register(@RequestBody AnmeldeDTO anmeldeDaten) {
+    public ResponseEntity<Map<String, Object>> register(@RequestBody AnmeldeDTO anmeldeDaten) {
         //ToDo JWT verifizieren und Benutzer ID rauslesen. Prozess für die Anmeldung starten. ID des neuen Anmelde-Eintrags zurückgeben
-        System.out.println(anmeldeDaten.getJwt());
-        System.out.println(anmeldeDaten.getOfferId());
-        return ResponseEntity.ok("AnmeldeID");
+        Map<String, Object> claims = userService.getJwtUtil().getClaims(anmeldeDaten.getJwt());
+        if(claims.isEmpty()){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(claims);
     }
     /**
      * Es Werden alle Offer in einer Liste zurückgegeben, die zum suchschlüssel Passen.

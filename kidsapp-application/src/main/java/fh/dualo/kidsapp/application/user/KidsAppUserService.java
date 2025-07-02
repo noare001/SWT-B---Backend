@@ -50,6 +50,8 @@ public class KidsAppUserService {
         return handleResponse(result);
     }
 
+
+
     /**
      * Ruft /login?name={username}&password={password} auf.
      * Gibt bei 404 ein leeres Mono zurück.
@@ -76,5 +78,9 @@ public class KidsAppUserService {
         }
         map.put("jwt", jwtUtil.generateToken(map));
         return map;
+    }
+
+    public JwtUtil getJwtUtil(){
+        return jwtUtil;
     }
 }
