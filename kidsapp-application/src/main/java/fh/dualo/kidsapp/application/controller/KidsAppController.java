@@ -5,6 +5,7 @@ import fh.dualo.kidsapp.application.model.AnmeldeDTO;
 import fh.dualo.kidsapp.application.model.OfferDTO;
 import fh.dualo.kidsapp.application.model.VorschauDTO;
 import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
+import fh.dualo.kidsapp.application.mqtt.MessageRouter;
 import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -19,13 +20,13 @@ import java.util.Map;
 public class KidsAppController {
 
     private KidsAppCache appCache;
-    private KidsAppMqttClient mqttClient;
+    private MessageRouter router;
     private KidsAppUserService userService;
 
     @Autowired
-    public KidsAppController(KidsAppUserService userService, KidsAppCache appCache, KidsAppMqttClient mqttClient) {
+    public KidsAppController(KidsAppUserService userService, KidsAppCache appCache, MessageRouter router) {
         this.appCache = appCache;
-        this.mqttClient = mqttClient;
+        this.router = router;
         this.userService = userService;
     }
 
@@ -89,6 +90,7 @@ public class KidsAppController {
         if(claims.isEmpty()){
             return ResponseEntity.badRequest().build();
         }
+
         return ResponseEntity.ok(claims);
     }
     /**
