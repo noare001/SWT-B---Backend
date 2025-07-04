@@ -1,5 +1,6 @@
 package backend.stadt.helperClasses;
 
+import backend.stadt.user.AppUser;
 import backend.stadt.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,10 +17,14 @@ public class AppUserDTO {
     private Integer providerId;
     private String providerName;
 
-    public AppUserDTO(Long id, String name, String email, Role role){
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.role = role;
+    public AppUserDTO(AppUser user){
+        this.id = user.getId();
+        this.name = user.getName();
+        this.email = user.getEmail();
+        this.role = user.getRole();
+        if(user.getProvider() != null){
+            providerId = user.getProvider().getId();
+            providerName = user.getProvider().getName();
+        }
     }
 }

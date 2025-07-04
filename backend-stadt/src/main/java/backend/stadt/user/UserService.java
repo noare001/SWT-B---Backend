@@ -21,7 +21,7 @@ public class UserService {
 
     public AppUserDTO login(String username, String password) {
         AppUser user =  userRepository.getAppUserByNameAndPassword(username, sha256Hash(password));
-        return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(),user.getProvider().getId(), user.getProvider().getName());
+        return new AppUserDTO(user);
     }
 
     public AppUserDTO register(String username, String password, String email) {
@@ -39,11 +39,8 @@ public class UserService {
         user.setEmail(email);
         user.setRole(Role.USER);
         userRepository.save(user);
-        if(user.getProvider() == null){
 
-            return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
-        }
-        return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(),user.getProvider().getId(), user.getProvider().getName());
+        return new AppUserDTO(user);
     }
 
     public static String sha256Hash(String input) {
