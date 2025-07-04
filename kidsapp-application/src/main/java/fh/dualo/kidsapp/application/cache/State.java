@@ -1,5 +1,9 @@
 package fh.dualo.kidsapp.application.cache;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.Map;
+
 public abstract class State {
-    public abstract String getOffer(String key);
+    public abstract Map<String, JsonNode> getOffer();
 }

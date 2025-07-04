@@ -19,7 +19,7 @@ public class KidsAppMqttClient implements MqttCallback{
 
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "kidsapp-client";
-    private List<SavedMessage> savedMessages;
+
     private MqttClient client;
     private MessageRouter messageRouter;
 
@@ -29,7 +29,6 @@ public class KidsAppMqttClient implements MqttCallback{
 
     @PostConstruct
     public void setup() throws MqttException {
-        savedMessages = new ArrayList<>();
         new Thread(this::connectWithRetry).start();
     }
 
@@ -40,12 +39,11 @@ public class KidsAppMqttClient implements MqttCallback{
                 client = new MqttClient(BROKER_URL, CLIENT_ID, null);
                 client.setCallback(this);
                 client.connect();
-                client.subscribe("event/add");
-                client.subscribe("event/update");
+                client.subscribe("offer/processed");
                 client.subscribe("stadt/online");
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
-                sendSavedMessages();
                 connected = true;
+                messageRouter.setClient(client);
             } catch (MqttException e) {
                 System.err.println("Verbindung fehlgeschlagen: " + e.getMessage());
                 try {
@@ -59,29 +57,6 @@ public class KidsAppMqttClient implements MqttCallback{
         }
     }
 
-    public void sendMessage(String topic, String payload) throws MqttException {
-        MqttMessage message = new MqttMessage(payload.getBytes());
-        if(client != null && client.isConnected()){
-            client.publish(topic, message);
-            System.out.println("Published: " + payload);
-        }else{
-            savedMessages.add(new SavedMessage(message, topic));
-            System.out.println("Saved Message for " + topic);
-        }
-    }
-
-    private void sendSavedMessages(){
-        if (client.isConnected()){
-            System.out.println("Sending Saved Messages");
-            savedMessages.forEach(m -> {
-                try {
-                    client.publish(m.topic,m.message);
-                } catch (MqttException e) {
-                    System.err.println("Error while sending saved Messages: " + e.getMessage());
-                }
-            });
-        }
-    }
 
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
@@ -107,9 +82,5 @@ public class KidsAppMqttClient implements MqttCallback{
         }
     }
 
-    @AllArgsConstructor
-    private  class SavedMessage {
-        private MqttMessage message;
-        private String topic;
-    }
+
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function OfferList() {
     const [search, setSearch] = useState<string>("");
+    const [onlyProcessing, setOnlyProcessing] = useState<boolean>(false);
     const [offers, setOffers] = useState([]);
 
     useEffect(() => {
@@ -16,16 +17,20 @@ export default function OfferList() {
 
     function filter(offer): boolean {
         const q = search.toLowerCase();
-        return (
+
+        const matchesSearch =
             (offer.name && offer.name.toLowerCase().includes(q)) ||
             (offer.city && offer.city.toLowerCase().includes(q)) ||
-            (offer.offerId && offer.offerId.toString().includes(q))
-        );
+            (offer.offerId && offer.offerId.toString().includes(q));
+
+        const matchesProcessing = !onlyProcessing || offer.status === "PROCESSING";
+
+        return matchesSearch && matchesProcessing;
     }
 
-    async function updateStatus(offerId: number, newStatus: string) {
-        await fetch(`/admin/offer/${offerId}/${newStatus}`, {
-            method: "PUT",
+    async function updateStatus(offerId: number, accepted: boolean) {
+        await fetch(`/admin/offer?accepted=${accepted}&id=${offerId}`, {
+            method: "POST",
         });
         fetchOffers(); // Liste neu laden
     }
@@ -33,12 +38,23 @@ export default function OfferList() {
     return (
         <div>
             <h2>Offer Liste</h2>
-            <input
-                type="text"
-                placeholder="Suche nach Offer"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-            />
+            <div style={{ display: "flex", gap: "20px", marginBottom: "10px" }}>
+                <input
+                    type="text"
+                    placeholder="Suche nach Offer"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                />
+                <div>
+                    <label className="switch">
+                        <input type="checkbox" checked={onlyProcessing}
+                               onChange={() => setOnlyProcessing(!onlyProcessing)}/>
+                        <span className="slider round"></span>
+                    </label>
+                    (Processing only)
+                </div>
+
+            </div>
             <div>
                 {offers.filter(o => filter(o)).map(o => (
                     <div key={o.offerId} className="offer-card">
@@ -61,10 +77,10 @@ export default function OfferList() {
 
                             {o.status === "PROCESSING" && (
                                 <div style={{ marginTop: "10px" }}>
-                                    <button onClick={() => updateStatus(o.offerId, "ACCEPTED")}>
+                                    <button onClick={() => updateStatus(o.offerId, true)}>
                                         ✅ Akzeptieren
                                     </button>
-                                    <button onClick={() => updateStatus(o.offerId, "REJECTED")} style={{ marginLeft: "10px" }}>
+                                    <button onClick={() => updateStatus(o.offerId, false)} style={{ marginLeft: "10px" }}>
                                         ❌ Ablehnen
                                     </button>
                                 </div>

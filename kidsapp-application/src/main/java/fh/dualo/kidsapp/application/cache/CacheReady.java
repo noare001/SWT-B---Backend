@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CacheReady extends State {
     private Map<String, JsonNode> cache;
@@ -14,13 +15,24 @@ public class CacheReady extends State {
     }
 
     @Override
-    public String getOffer(String key) {
-        //ToDo alle die zum key passen. Ist also nicht nur das hier.
+    public Map<String, JsonNode> getOffer() {
+            return cache.entrySet().stream()
+                    .filter(entry -> {
+                        JsonNode statusNode = entry.getValue().get("status");
+                        return statusNode != null && "ACCEPTED".equals(statusNode.asText());
+                    })
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+
+    public void update(String newOffer){
         ObjectMapper mapper = new ObjectMapper();
-        try{
-            return mapper.writeValueAsString(cache);
+        try {
+            JsonNode node = mapper.readTree(newOffer);
+            String key = node.fieldNames().next();
+            JsonNode value = node.get(key);
+            cache.put(key, value);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Invalid JSON: " + newOffer, e);
         }
     }
 }

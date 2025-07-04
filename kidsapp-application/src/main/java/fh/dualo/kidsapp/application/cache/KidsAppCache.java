@@ -6,57 +6,62 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class KidsAppCache extends KidsAppData {
 
-
-    private KidsAppDataService dataService;
     private State state;
     private WebClient webClient;
 
-    @Autowired
-    public KidsAppCache(KidsAppDataService dataService){
-        this.dataService = dataService;
-        state = new CacheLoading(dataService);
-    }
     @PostConstruct
     public void init() {
-        webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt/cache").build();
-        fillCache();
+        webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt").build();
+        state = new CacheLoading(webClient);
+        new Thread(this::fillCache).start();
     }
+
 
     public void fillCache(){
+        Map<String,JsonNode> data = new CacheLoading(webClient).getOffer();
+        if(!data.isEmpty()){
+            state = new CacheReady(data);
+        }
+    }
+
+    public String addOffer(JsonNode jsonNode, int id) {
         ObjectMapper mapper = new ObjectMapper();
-        state = new CacheLoading(dataService);
-        webClient.get().retrieve()
-                .bodyToMono(String.class)
-                .onErrorResume(ex -> {
-                    System.err.println("Cache-Service nicht erreichbar: " + ex.getMessage());
-                    return Mono.just("{}");
-                })
-                .map(json -> {
-                    try {
-                        return mapper.readValue(json, new TypeReference<Map<String, JsonNode>>() {});
-                    } catch (JsonProcessingException e) {
-                        throw new RuntimeException(e);
-                    }
-                })
-                .subscribe(jsonMap -> {
-                    state = new CacheReady(jsonMap);
-                    System.out.println("\u001B[32mCache Erfolgreich geladen!\u001B[0m");
-                });
+        try {
+            String json = webClient.post()
+                    .uri(uriBuilder -> uriBuilder.path("/offer").queryParam("id", id).build())
+                    .bodyValue(jsonNode)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
+            update(json);
+
+            return json;
+
+        } catch (Exception e) {
+            throw new RuntimeException("Fehler beim Senden des Offers an den Backend-Service", e);
+        }
     }
 
-    public String getOffer(String key) {
-        return state.getOffer(key);
+    public void update(String newOffer){
+        System.out.println("HELLOOOO");
+        if(state instanceof CacheReady){
+            ((CacheReady) state).update(newOffer);
+        }
     }
+    public Map<String, JsonNode> getOffer() {
+        return state.getOffer();
+    }
+
+
 }

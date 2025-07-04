@@ -1,4 +1,4 @@
-package fh.dualo.kidsapp.application.user;
+package fh.dualo.kidsapp.application.services;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.JwtParser;

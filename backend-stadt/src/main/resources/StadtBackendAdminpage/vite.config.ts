@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
-    outDir: '../static',
+    outDir: '../public',
     emptyOutDir: true // wichtig: löscht das alte Build-Verzeichnis
   },
   server: {

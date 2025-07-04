@@ -1,7 +1,6 @@
 package backend.stadt.mqtt;
 
 import backend.stadt.enums.OfferStatus;
-import backend.stadt.helperClasses.OfferIdentifier;
 import backend.stadt.modells.Offer;
 import backend.stadt.repositorys.OfferRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,10 +11,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 
 @Service
 public class MessageHandler {

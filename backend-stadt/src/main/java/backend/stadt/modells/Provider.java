@@ -1,5 +1,6 @@
 package backend.stadt.modells;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
@@ -51,7 +52,7 @@ public class Provider {
 
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonBackReference
     private Set<Offer> offers;
 
     @JsonProperty("providerName")

@@ -46,7 +46,7 @@ public class DatabaseService {
         userRepository.save(user);
     }
     public List<Offer> getOffers() { return offerRepository.findAll(); }
-    public Offer getOfferById(int id) { return offerRepository.findByOfferId(id); }
+    public Offer getOfferById(int id) { return offerRepository.findFullyLoaded(id); }
 
     public void saveOffer(Offer offer){
         offerRepository.save(offer);

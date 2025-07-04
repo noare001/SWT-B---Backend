@@ -1,18 +1,16 @@
 package fh.dualo.kidsapp.application.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import fh.dualo.kidsapp.application.cache.KidsAppCache;
 import fh.dualo.kidsapp.application.model.AnmeldeDTO;
-import fh.dualo.kidsapp.application.model.OfferDTO;
-import fh.dualo.kidsapp.application.model.VorschauDTO;
-import fh.dualo.kidsapp.application.mqtt.KidsAppMqttClient;
 import fh.dualo.kidsapp.application.mqtt.MessageRouter;
-import fh.dualo.kidsapp.application.user.KidsAppUserService;
+import fh.dualo.kidsapp.application.services.KidsAppUserService;
+import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -37,11 +35,11 @@ public class KidsAppController {
      */
     @GetMapping
     @RequestMapping("/cache")
-    public ResponseEntity<String> searchOffer() {
+    public ResponseEntity<Map<String, JsonNode>> searchOffer() {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(appCache.getOffer(""));
+                .body(appCache.getOffer());
     }
     /**
      * Bsp: localhost:8090/api/login?name=lukes&password=lukes
@@ -93,33 +91,35 @@ public class KidsAppController {
 
         return ResponseEntity.ok(claims);
     }
-    /**
-     * Es Werden alle Offer in einer Liste zurückgegeben, die zum suchschlüssel Passen.
-     * 'start' und 'end' legen fest, die wievielten Offer die zur SUchanfrage pasen, zurücgegebn werden sollten.
-     * Bsp: localhost:8090/api/search?start=1&end=20
-     */
-    @PostMapping
-    @RequestMapping("/search")
-    public ResponseEntity<String> register(@RequestParam("key") String key, @RequestParam("start") int start, @RequestParam("end") int end) {
-        //ToDo VorschauDTO muss angepasst werden. Nur die nötigen daten eines Offers
-        if((end-start) > 20 || (end-start) < 1){
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(appCache.getOffer(""));
-    }
 
     /**
      * Returnt alle Daten zu dem gesuchten Offer
      * Bsp: localhost:8090/api/offer?id=23455
      */
-    @GetMapping
-    @RequestMapping("/offer")
-    public ResponseEntity<OfferDTO> getOffer(@RequestParam("id") String id) {
+    @GetMapping("/offer")
+    public ResponseEntity<Map<String, JsonNode>> getOffer() {
         //ToDo ja nh
-        return ResponseEntity.ok(null);
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(appCache.getOffer());
+    }
+    /**
+     * Hinzufügen vcn einem Offer
+     * Bsp: localhost:8090/api/offer?jwt={jwt}
+     */
+    @PostMapping("/offer")
+    public ResponseEntity<String> addOffer(@RequestParam("jwt") String jwt, @RequestBody JsonNode jsonNode) throws MqttException {
+        Map<String,Object> claims = userService.getJwtUtil().getClaims(jwt);
+        if (!"AUTHOR".equals(claims.get("role"))) {
+            ResponseEntity.badRequest().build();
+        }
+        try{
+            return ResponseEntity.ok(appCache.addOffer(jsonNode, (Integer) claims.get("id")));
+        }catch (Exception e){
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 }
 

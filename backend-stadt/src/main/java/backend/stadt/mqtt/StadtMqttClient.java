@@ -39,7 +39,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
                 client.subscribe("cache/request");
                 connected = true;
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
-                router.setMqttClient(this);
+                router.setMqttClient(client);
             } catch (MqttException e) {
                 System.err.println("Verbindung fehlgeschlagen: " + e.getMessage());
                 try {
@@ -53,12 +53,6 @@ public class StadtMqttClient implements MqttCallbackExtended {
         }
     }
 
-    public void publish(String topic, String payload) throws MqttException {
-        MqttMessage message = new MqttMessage(payload.getBytes());
-        message.setRetained(true);
-        client.publish(topic, message);
-    }
-
     @Override
     public void messageArrived(String topic, MqttMessage message) {
         router.processMessage(topic, new String(message.getPayload()), this);
@@ -70,9 +64,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
     }
 
     @Override
-    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
-    }
+    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {}
 
     @PreDestroy
     public void destroy() {
@@ -86,18 +78,12 @@ public class StadtMqttClient implements MqttCallbackExtended {
             System.out.println("Fehler beijm schließen der Connection!");
         }
     }
-
-    public boolean isConnected(){
-        if(client != null && client.isConnected()){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void connectComplete(boolean b, String s) {
         try {
-            publish("stadt/online", "");
+            MqttMessage message = new MqttMessage("".getBytes());
+            message.setRetained(true);
+            client.publish("stadt/online", message);
         } catch (MqttException e) {
             throw new RuntimeException(e);
         }

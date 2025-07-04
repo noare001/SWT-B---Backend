@@ -1,4 +1,4 @@
-package fh.dualo.kidsapp.application.user;
+package fh.dualo.kidsapp.application.services;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.core.ParameterizedTypeReference;

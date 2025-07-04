@@ -2,48 +2,77 @@ package backend.stadt.mqtt;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Setter;
+import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class MessageRouter {
 
     private MessageHandler messageHandler;
-    private ObjectMapper mapper;
 
     @Setter
-    private StadtMqttClient mqttClient;
+    private MqttClient client;
+    private List<SavedMessage> savedMessages;
+
     @Autowired
     public MessageRouter(MessageHandler messageHandler){
         this.messageHandler = messageHandler;
-        mapper = new ObjectMapper();
+        savedMessages = new ArrayList<>();
     }
 
     public void processMessage(String topic, String payload, StadtMqttClient client){
-        try{
             switch (topic) {
-                case "offer/add": {
-                        client.publish("offer/received", mapper.writeValueAsString(messageHandler.addOffer(payload)));
-                } break;
                 default: System.out.println("Unknown topic: " + topic);
             }
-        }catch (JsonProcessingException | MqttException e){
-            System.err.println("Fehler im topic " + topic + " mit dem payload: " + payload);
-            System.err.println(e.getMessage());
+    }
+
+    public void sendMessage(String topic, String payload) throws MqttException {
+        MqttMessage message = new MqttMessage(payload.getBytes());
+        if(isConnected()){
+            client.publish(topic, message);
+            System.out.println("Published: " + payload);
+        }else{
+            savedMessages.add(new SavedMessage(message, topic));
+            System.out.println("Saved Message for " + topic);
         }
     }
 
-    public void sendMessage(String topic, String payload){
-        if (mqttClient != null){ //-> D.h das wir verbunden sind
-            try{
-                mqttClient.publish(topic, payload);
-            } catch (MqttException e) {
-                System.err.println("Konnte die Nachricht nicht senden!");
-                System.err.println(e.getMessage());
-            }
+    private void sendSavedMessages(){
+        if (client.isConnected()){
+            System.out.println("Sending Saved Messages");
+            savedMessages.forEach(m -> {
+                try {
+                    client.publish(m.topic,m.message);
+                } catch (MqttException e) {
+                    System.err.println("Error while sending saved Messages: " + e.getMessage());
+                }
+            });
         }
+    }
+
+    public void setMqttClient(MqttClient client){
+        if(client != null){
+            this.client = client;
+            sendSavedMessages();
+        }
+    }
+
+    public boolean isConnected(){
+        return client != null && client.isConnected();
+    }
+
+    @AllArgsConstructor
+    private  class SavedMessage {
+        private MqttMessage message;
+        private String topic;
     }
 
 }
