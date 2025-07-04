@@ -15,4 +15,11 @@ public class AppUserDTO {
     private Role role;
     private Integer providerId;
     private String providerName;
+
+    public AppUserDTO(Long id, String name, String email, Role role){
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.role = role;
+    }
 }

@@ -39,6 +39,10 @@ public class UserService {
         user.setEmail(email);
         user.setRole(Role.USER);
         userRepository.save(user);
+        if(user.getProvider() == null){
+
+            return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole());
+        }
         return new AppUserDTO(user.getId(), user.getName(), user.getEmail(), user.getRole(),user.getProvider().getId(), user.getProvider().getName());
     }
 
