@@ -14,7 +14,7 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Service
-public class KidsAppCache extends KidsAppData {
+public class KidsAppCache {
 
     private State state;
     private WebClient webClient;
