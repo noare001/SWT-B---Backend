@@ -1,15 +1,10 @@
 package fh.dualo.kidsapp.application.cache;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+
 
 import java.util.Map;
 
@@ -35,7 +30,6 @@ public class KidsAppCache {
     }
 
     public String addOffer(JsonNode jsonNode, int id) {
-        ObjectMapper mapper = new ObjectMapper();
         try {
             String json = webClient.post()
                     .uri(uriBuilder -> uriBuilder.path("/offer").queryParam("id", id).build())

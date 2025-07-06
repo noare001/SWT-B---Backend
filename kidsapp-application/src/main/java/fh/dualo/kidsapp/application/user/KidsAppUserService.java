@@ -1,6 +1,7 @@
-package fh.dualo.kidsapp.application.services;
+package fh.dualo.kidsapp.application.user;
 
 import jakarta.annotation.PostConstruct;
+import lombok.Getter;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class KidsAppUserService {
 
     private WebClient webClient;
+    @Getter
     private JwtUtil jwtUtil;
 
     @PostConstruct
@@ -78,7 +80,4 @@ public class KidsAppUserService {
         return map;
     }
 
-    public JwtUtil getJwtUtil(){
-        return jwtUtil;
-    }
 }

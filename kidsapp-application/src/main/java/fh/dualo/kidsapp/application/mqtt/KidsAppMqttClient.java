@@ -2,7 +2,6 @@ package fh.dualo.kidsapp.application.mqtt;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import lombok.AllArgsConstructor;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -10,9 +9,6 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class KidsAppMqttClient implements MqttCallback{
@@ -23,12 +19,12 @@ public class KidsAppMqttClient implements MqttCallback{
     private MqttClient client;
     private MessageRouter messageRouter;
 
-    public KidsAppMqttClient(@Lazy MessageRouter messageRouter) throws MqttException {
+    public KidsAppMqttClient(@Lazy MessageRouter messageRouter) {
         this.messageRouter = messageRouter;
     }
 
     @PostConstruct
-    public void setup() throws MqttException {
+    public void setup() {
         new Thread(this::connectWithRetry).start();
     }
 

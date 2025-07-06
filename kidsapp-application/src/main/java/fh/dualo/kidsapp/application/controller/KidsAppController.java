@@ -2,9 +2,8 @@ package fh.dualo.kidsapp.application.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fh.dualo.kidsapp.application.cache.KidsAppCache;
-import fh.dualo.kidsapp.application.model.AnmeldeDTO;
 import fh.dualo.kidsapp.application.mqtt.MessageRouter;
-import fh.dualo.kidsapp.application.services.KidsAppUserService;
+import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -75,21 +74,6 @@ public class KidsAppController {
         }
         // 200 OK mit Body
         return ResponseEntity.ok(result);
-    }
-
-    /**
-     * Bsp: localhost:8090/api/anmelden
-     */
-    @PostMapping
-    @RequestMapping("/anmelden")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody AnmeldeDTO anmeldeDaten) {
-        //ToDo JWT verifizieren und Benutzer ID rauslesen. Prozess für die Anmeldung starten. ID des neuen Anmelde-Eintrags zurückgeben
-        Map<String, Object> claims = userService.getJwtUtil().getClaims(anmeldeDaten.getJwt());
-        if(claims.isEmpty()){
-            return ResponseEntity.badRequest().build();
-        }
-
-        return ResponseEntity.ok(claims);
     }
 
     /**
