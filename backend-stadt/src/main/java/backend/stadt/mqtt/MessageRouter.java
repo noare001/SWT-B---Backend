@@ -16,19 +16,16 @@ import java.util.List;
 @Service
 public class MessageRouter {
 
-    private MessageHandler messageHandler;
 
     @Setter
     private MqttClient client;
     private List<SavedMessage> savedMessages;
 
-    @Autowired
-    public MessageRouter(MessageHandler messageHandler){
-        this.messageHandler = messageHandler;
+    public MessageRouter(){
         savedMessages = new ArrayList<>();
     }
 
-    public void processMessage(String topic, String payload, StadtMqttClient client){
+    public void processMessage(String topic, String payload){
             switch (topic) {
                 default: System.out.println("Unknown topic: " + topic);
             }

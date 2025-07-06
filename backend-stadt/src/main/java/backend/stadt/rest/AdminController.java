@@ -1,12 +1,11 @@
 package backend.stadt.rest;
 
-import backend.stadt.DatabaseService;
+import backend.stadt.repositorys.DatabaseService;
 import backend.stadt.enums.OfferStatus;
 import backend.stadt.modells.Offer;
 import backend.stadt.modells.Provider;
 import backend.stadt.helperClasses.AppUserDTO;
 import backend.stadt.mqtt.MessageRouter;
-import backend.stadt.mqtt.StadtMqttClient;
 import backend.stadt.user.AppUser;
 import backend.stadt.user.Role;
 import com.fasterxml.jackson.core.JsonProcessingException;

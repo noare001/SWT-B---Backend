@@ -18,7 +18,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
     }
 
     @PostConstruct
-    public void start(){
+    public void init(){
         new Thread(this::connectWithRetry).start();
     }
 
@@ -55,7 +55,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
 
     @Override
     public void messageArrived(String topic, MqttMessage message) {
-        router.processMessage(topic, new String(message.getPayload()), this);
+        router.processMessage(topic, new String(message.getPayload()));
     }
 
     @Override

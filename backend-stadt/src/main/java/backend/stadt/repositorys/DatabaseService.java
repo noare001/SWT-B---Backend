@@ -1,11 +1,11 @@
-package backend.stadt;
+package backend.stadt.repositorys;
 
 import backend.stadt.modells.Offer;
 import backend.stadt.modells.Provider;
 import backend.stadt.repositorys.OfferRepository;
 import backend.stadt.repositorys.ProviderRepository;
 import backend.stadt.user.AppUser;
-import backend.stadt.user.UserRepository;
+import backend.stadt.repositorys.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
