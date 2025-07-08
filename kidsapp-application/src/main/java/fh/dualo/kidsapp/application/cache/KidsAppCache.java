@@ -25,6 +25,7 @@ public class KidsAppCache {
     public void fillCache(){
         Map<String,JsonNode> data = new CacheLoading(webClient).getOffer();
         if(!data.isEmpty()){
+            System.out.println("\u001B[32mCache erfolgreich geladen!\u001B[0m");
             state = new CacheReady(data);
         }
     }

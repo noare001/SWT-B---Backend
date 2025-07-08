@@ -4,10 +4,12 @@ import backend.stadt.user.AppUser;
 import backend.stadt.user.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class AppUserDTO {
     private Long id;
     private String name;
