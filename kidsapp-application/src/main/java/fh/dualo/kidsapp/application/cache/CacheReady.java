@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CacheReady extends State {
+    //Der Schlüssel ist {offerId}-{providerId}
     private Map<String, JsonNode> cache;
 
     public CacheReady(Map<String, JsonNode> cache) {

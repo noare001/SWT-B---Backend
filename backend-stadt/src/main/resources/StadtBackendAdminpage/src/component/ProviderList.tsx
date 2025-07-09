@@ -57,13 +57,6 @@ export default function ProviderList() {
                             <div><strong>Kontakt:</strong> {p.contactPerson}</div>
                             <div><strong>Telefon:</strong> {p.phoneNumber}</div>
                             <div><strong>Link:</strong> <a href={p.link}>{p.link}</a></div>
-                            <div><strong>Angebote:</strong>
-                                <ul>
-                                    {p.providerName && Object.entries(p.providerName).map(([id, name]) => (
-                                        <li key={id}>#{id}: {name}</li>
-                                    ))}
-                                </ul>
-                            </div>
                         </div>
                     </div>
                 ))}

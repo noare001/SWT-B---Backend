@@ -28,19 +28,6 @@ public class KidsAppController {
     }
 
     /**
-     * Nur zum testen. Abfragen des gesamten caches
-     * localhost:8090/api/cache
-     * @return cache data
-     */
-    @GetMapping
-    @RequestMapping("/cache")
-    public ResponseEntity<Map<String, JsonNode>> searchOffer() {
-        return ResponseEntity
-                .ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(appCache.getOffer());
-    }
-    /**
      * Bsp: localhost:8090/api/login?name=lukes&password=lukes
      */
     @GetMapping
@@ -77,19 +64,47 @@ public class KidsAppController {
     }
 
     /**
-     * Returnt alle Daten zu dem gesuchten Offer
-     * Bsp: localhost:8090/api/offer?id=23455
+     * Returnt alle Offer
+     * Bsp: localhost:8090/api/offer
      */
     @GetMapping("/offer")
     public ResponseEntity<Map<String, JsonNode>> getOffer() {
-        //ToDo ja nh
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(appCache.getOffer());
     }
     /**
-     * Hinzufügen vcn einem Offer
+     * Returnt den Offer mit der Id
+     * Bsp: localhost:8090/api/offer?id=23455
+     */
+    @GetMapping("/offer/{id}")
+    public ResponseEntity<JsonNode> getSingleOffer(@PathVariable("id") int id) {
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(appCache.getOffer(id));
+    }
+    /**
+     * Returnt den Offer des Providers zu dem der Autor gehört
+     * Bsp: localhost:8090/api/author/offer?jwt=...
+     */
+    @GetMapping("/author/offer")
+    public ResponseEntity<Map<String, JsonNode>> getOfferFromAuthor(@RequestParam("jwt") String jwt) {
+        try{
+            Map<String,Object> claims = userService.getJwtUtil().getClaims(jwt);
+            String providerId = String.valueOf(claims.get("providerId"));
+            return ResponseEntity
+                    .ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(appCache.getProviderOffer(providerId));
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+    /**
+     * Hinzufügen von einem Offer
      * Bsp: localhost:8090/api/offer?jwt={jwt}
      */
     @PostMapping("/offer")

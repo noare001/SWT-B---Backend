@@ -51,6 +51,16 @@ public class AdminController {
     public List<AppUserDTO> getAllUsers() {
         return databaseService.getUser().stream().map(AppUserDTO::new).toList();
     }
+
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") int id) {
+        try{
+            databaseService.deleteUser(id);
+            return ResponseEntity.ok().build();
+        }catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
+    }
     @PutMapping("/user/{id}")
     public ResponseEntity<?> updateUser(@PathVariable("id") int id, @RequestBody AppUserDTO update) {
         AppUser user = databaseService.getUser(id).orElseThrow();
@@ -63,28 +73,35 @@ public class AdminController {
         databaseService.saveUser(user);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping("/offer")
     public ResponseEntity<List<Offer>> getOffer() {
         return ResponseEntity.ok(databaseService.getOffers());
     }
     @PostMapping("/offer")
-    public ResponseEntity<String> processOffer(
+    public ResponseEntity<String> updateOffer(
             @RequestParam("accepted") boolean accepted,
             @RequestParam("id") int id) throws JsonProcessingException, MqttException {
         Offer offer = databaseService.getOfferById(id);
         if (offer == null) {
             return ResponseEntity.notFound().build();
         }
-        offer.setStatus(accepted ? OfferStatus.ACCEPTED : OfferStatus.REJECTED);
+        offer.setStatus(accepted ? OfferStatus.ACCEPTED : OfferStatus.PROCESSING);
         databaseService.saveOffer(offer);
 
-        String key = offer.getOfferId() + "-" + offer.getName();
-
-        JsonNode jsonNode = mapper.valueToTree(Map.of(key, offer));
-
-        router.sendMessage("offer/processed", mapper.writeValueAsString(jsonNode));
+        sendUpdateOfferMessage(offer);
         return ResponseEntity.ok().build();
     }
+    @DeleteMapping("/offer")
+    public ResponseEntity<String> deleteOffer(
+            @RequestParam("id") int id) throws MqttException, JsonProcessingException {
+        Offer deletedOffer = databaseService.getOfferById(id);
+        databaseService.deleteOffer(id);
+        deletedOffer.setStatus(OfferStatus.REJECTED);
+        sendUpdateOfferMessage(deletedOffer);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/provider")
     public ResponseEntity<List<Provider>> getProvider() {
         return ResponseEntity.ok(databaseService.getProviders());
@@ -95,5 +112,11 @@ public class AdminController {
         offer.setStatus(OfferStatus.valueOf(newStatus));
         databaseService.saveOffer(offer);
         return ResponseEntity.ok().build();
+    }
+
+    private void sendUpdateOfferMessage(Offer offer) throws JsonProcessingException, MqttException {
+        String key = offer.getOfferId() + "-" + offer.getName();
+        JsonNode jsonNode = mapper.valueToTree(Map.of(key, offer));
+        router.sendMessage("offer/processed", mapper.writeValueAsString(jsonNode));
     }
 }

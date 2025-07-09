@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class KidsAppCache {
@@ -57,6 +58,24 @@ public class KidsAppCache {
     public Map<String, JsonNode> getOffer() {
         return state.getOffer();
     }
+    public Map<String, JsonNode> getProviderOffer(String providerId) {
+        if (providerId == null || providerId.isBlank()) {
+            return Map.of();
+        }
+        return state.getOffer().entrySet().stream()
+                .filter(entry -> entry.getKey().endsWith("-"+providerId))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
+    public JsonNode getOffer(int id) {
+        Map<String, JsonNode> offerMap = state.getOffer();
+        String searchKey = offerMap.keySet().stream().filter(key -> key.startsWith(id+"-")).findFirst().orElse(null);
+        if(offerMap.containsKey(searchKey)){
+            return offerMap.get(searchKey);
+        }
+        return null;
+    }
+
+
 
 
 }

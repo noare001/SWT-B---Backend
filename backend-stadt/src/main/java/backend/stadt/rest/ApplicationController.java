@@ -48,7 +48,7 @@ public class ApplicationController {
     @RequestMapping("/offer")
     public ResponseEntity<Map<String,Offer>> addOffer(@RequestParam("id") int userId, @RequestBody Offer newOffer) {
         AppUser user = databaseService.getUser(userId).orElseThrow();
-        if(!user.getRole().equals(Role.AUTHOR)){
+        if(!user.getRole().equals(Role.AUTHOR) || user.getProvider() == null){
             ResponseEntity.badRequest().build();
         }
         newOffer.setStatus(OfferStatus.PROCESSING);

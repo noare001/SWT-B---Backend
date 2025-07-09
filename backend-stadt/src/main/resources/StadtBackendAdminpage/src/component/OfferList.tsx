@@ -1,9 +1,40 @@
 import { useEffect, useState } from "react";
+import './offer.css'
+
+
+interface EventScheduleEntry {
+    startTime: string;
+    endTime: string;
+}
+type Weekday = "MONDAY" | "TUESDAY" | "WEDNESDAY" | "THURSDAY" | "FRIDAY" | "SATURDAY" | "SUNDAY";
+type EventSchedule = Partial<Record<Weekday, EventScheduleEntry>>;
+interface Offer {
+    offerId: number;
+    name: string;
+    street: string;
+    city: string;
+    postalCode: number;
+    offerTypes: string[];
+    targetGroups: string[];
+    recurring: boolean;
+    startDate: string;
+    endDate: string;
+    eventSchedule: EventSchedule;
+    registrationRequired: boolean;
+    additionalInformation: string;
+    cost: number;
+    filters: string[];
+    status: string;
+    minAge: number;
+    maxAge: number;
+    languages: string[];
+    providerName: string;
+}
 
 export default function OfferList() {
     const [search, setSearch] = useState<string>("");
     const [onlyProcessing, setOnlyProcessing] = useState<boolean>(false);
-    const [offers, setOffers] = useState([]);
+    const [offers, setOffers] = useState<Offer[]>([]);
 
     useEffect(() => {
         fetchOffers();
@@ -15,30 +46,67 @@ export default function OfferList() {
             .then((data) => setOffers(data));
     }
 
-    function filter(offer): boolean {
+    function filter(offer:Offer): boolean{
         const q = search.toLowerCase();
 
-        const matchesSearch =
-            (offer.name && offer.name.toLowerCase().includes(q)) ||
-            (offer.city && offer.city.toLowerCase().includes(q)) ||
-            (offer.offerId && offer.offerId.toString().includes(q));
+        const matchesSearch = [
+            offer.name?.toLowerCase(),
+            offer.city?.toLowerCase(),
+            offer.offerId?.toString()
+        ].some(field => field?.includes(q));
 
         const matchesProcessing = !onlyProcessing || offer.status === "PROCESSING";
 
         return matchesSearch && matchesProcessing;
     }
 
-    async function updateStatus(offerId: number, accepted: boolean) {
-        await fetch(`/admin/offer?accepted=${accepted}&id=${offerId}`, {
+    function getActionButtons(offer:Offer){
+        if(offer.status === "PROCESSING"){
+            return (
+                <>
+                    <button onClick={() => updateStatus(offer.offerId, true)}>
+                        ✅ Akzeptieren
+                    </button>
+                    <button onClick={() => deleteOffer(offer.offerId)} style={{marginLeft: "0"}}>
+                        ❌ Ablehnen
+                    </button>
+                </>
+            )
+        }else{
+            return (
+                <>
+                    <button onClick={() => {
+                            updateStatus(offer.offerId, false);
+                    }} className={"edit-button"}>↩</button>
+                    <button
+                        onClick={() => {
+                            if (window.confirm(`Möchten Sie das Angebot wirklich löschen?`)) {
+                                deleteOffer(offer.offerId);
+                            }
+                        }} className="delete-button"
+                    >X</button>
+                </>
+
+            )
+        }
+    }
+
+    function updateStatus(offerId: number, accepted: boolean) {
+        fetch(`/admin/offer?accepted=${accepted}&id=${offerId}`, {
             method: "POST",
-        });
-        fetchOffers(); // Liste neu laden
+        }).then(() => fetchOffers());
+    }
+
+    function deleteOffer(offerId: number) {
+        fetch(`/admin/offer?id=${offerId}`, {
+            method: "DELETE",
+        }).then(() => fetchOffers());
     }
 
     return (
         <div>
             <h2>Offer Liste</h2>
-            <div style={{ display: "flex", gap: "20px", marginBottom: "10px" }}>
+            <div style={{display: "flex", gap: "20px", marginBottom: "10px" }}>
                 <input
                     type="text"
                     placeholder="Suche nach Offer"
@@ -61,7 +129,10 @@ export default function OfferList() {
                         <div className="offer-summary">
                             <span><strong>#{o.offerId}</strong> – {o.name}</span>
                             <span>{o.city ?? "-"}</span>
-                            <span>{o.startDate ?? "-"} – {o.endDate ?? "-"}</span>
+                            <span>
+                                <span>{o.startDate ?? "-"} – {o.endDate ?? "-"}</span>
+                                {getActionButtons(o)}
+                            </span>
                         </div>
                         <div className="offer-details">
                             <div><strong>Provider:</strong> {o.providerName}</div>
@@ -75,16 +146,7 @@ export default function OfferList() {
                             <div><strong>Typen:</strong> {o.offerTypes?.join(", ") ?? "-"}</div>
                             <div><strong>Filter:</strong> {o.filters?.join(", ") ?? "-"}</div>
 
-                            {o.status === "PROCESSING" && (
-                                <div style={{ marginTop: "10px" }}>
-                                    <button onClick={() => updateStatus(o.offerId, true)}>
-                                        ✅ Akzeptieren
-                                    </button>
-                                    <button onClick={() => updateStatus(o.offerId, false)} style={{ marginLeft: "10px" }}>
-                                        ❌ Ablehnen
-                                    </button>
-                                </div>
-                            )}
+
                         </div>
                     </div>
                 ))}

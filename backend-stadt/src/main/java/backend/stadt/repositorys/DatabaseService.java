@@ -2,10 +2,7 @@ package backend.stadt.repositorys;
 
 import backend.stadt.modells.Offer;
 import backend.stadt.modells.Provider;
-import backend.stadt.repositorys.OfferRepository;
-import backend.stadt.repositorys.ProviderRepository;
 import backend.stadt.user.AppUser;
-import backend.stadt.repositorys.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +33,7 @@ public class DatabaseService {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    //User
     public List<AppUser> getUser() {
         return userRepository.findAll();
     }
@@ -45,12 +43,19 @@ public class DatabaseService {
     public void saveUser(AppUser user){
         userRepository.save(user);
     }
+    public void deleteUser(int id){
+        userRepository.deleteById(id);
+    }
+    //Offer
     public List<Offer> getOffers() { return offerRepository.findAll(); }
     public Offer getOfferById(int id) { return offerRepository.findFullyLoaded(id); }
-
     public void saveOffer(Offer offer){
         offerRepository.save(offer);
     }
+    public void deleteOffer(int id){
+        offerRepository.deleteById(id);
+    }
+    //Provider
     public List<Provider> getProviders() { return providerRepository.findAll(); }
     public Provider getProviderById(int id) { return providerRepository.findById(id); }
 
@@ -59,9 +64,13 @@ public class DatabaseService {
         Map<String, Offer> map = new HashMap<>();
         offerList.forEach(offer ->
                 {
-                    map.put(offer.getOfferId() + "-" + offer.getName(), offer);
+                    map.put(getOfferKey(offer), offer);
                 }
         );
         return mapper.writeValueAsString(map);
+    }
+
+    private String getOfferKey(Offer offer){
+        return offer.getOfferId() + "-" + offer.getProvider().getId();
     }
 }

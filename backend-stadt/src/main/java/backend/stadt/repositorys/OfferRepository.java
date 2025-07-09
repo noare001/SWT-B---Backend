@@ -9,11 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface OfferRepository extends JpaRepository<Offer, Long> {
+public interface OfferRepository extends JpaRepository<Offer, Integer> {
     @Override
     List<Offer> findAll();
-
-    Offer findByOfferId(Integer offerId);
 
     @Query("""
     SELECT DISTINCT o FROM Offer o

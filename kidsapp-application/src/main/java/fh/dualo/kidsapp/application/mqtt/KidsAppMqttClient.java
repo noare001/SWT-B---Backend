@@ -39,7 +39,7 @@ public class KidsAppMqttClient implements MqttCallback{
                 client.subscribe("stadt/online");
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 connected = true;
-                messageRouter.setClient(client);
+                messageRouter.setMqttClient(client);
             } catch (MqttException e) {
                 System.err.println("Verbindung fehlgeschlagen: " + e.getMessage());
                 try {
