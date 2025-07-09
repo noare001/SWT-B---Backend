@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -55,16 +57,16 @@ public class KidsAppCache {
             ((CacheReady) state).update(newOffer);
         }
     }
-    public Map<String, JsonNode> getOffer() {
-        return state.getOffer();
+    public Collection<JsonNode> getOffer() {
+        return state.getOffer().values();
     }
-    public Map<String, JsonNode> getProviderOffer(String providerId) {
+    public List<JsonNode> getProviderOffer(String providerId) {
         if (providerId == null || providerId.isBlank()) {
-            return Map.of();
+            return List.of();
         }
         return state.getOffer().entrySet().stream()
-                .filter(entry -> entry.getKey().endsWith("-"+providerId))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                .filter(entry -> entry.getKey().endsWith("-"+providerId)).map(Map.Entry::getValue)
+                .toList();
     }
     public JsonNode getOffer(int id) {
         Map<String, JsonNode> offerMap = state.getOffer();

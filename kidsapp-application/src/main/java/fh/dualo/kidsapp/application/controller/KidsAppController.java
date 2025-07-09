@@ -10,7 +10,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api")
@@ -68,7 +71,7 @@ public class KidsAppController {
      * Bsp: localhost:8090/api/offer
      */
     @GetMapping("/offer")
-    public ResponseEntity<Map<String, JsonNode>> getOffer() {
+    public ResponseEntity<Collection<JsonNode>> getOffer() {
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
@@ -76,7 +79,7 @@ public class KidsAppController {
     }
     /**
      * Returnt den Offer mit der Id
-     * Bsp: localhost:8090/api/offer?id=23455
+     * Bsp: localhost:8090/api/offer/{id}
      */
     @GetMapping("/offer/{id}")
     public ResponseEntity<JsonNode> getSingleOffer(@PathVariable("id") int id) {
@@ -90,7 +93,7 @@ public class KidsAppController {
      * Bsp: localhost:8090/api/author/offer?jwt=...
      */
     @GetMapping("/author/offer")
-    public ResponseEntity<Map<String, JsonNode>> getOfferFromAuthor(@RequestParam("jwt") String jwt) {
+    public ResponseEntity<List<JsonNode>> getOfferFromAuthor(@RequestParam("jwt") String jwt) {
         try{
             Map<String,Object> claims = userService.getJwtUtil().getClaims(jwt);
             String providerId = String.valueOf(claims.get("providerId"));
