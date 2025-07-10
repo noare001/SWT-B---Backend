@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppUserDTO {
-    private Long id;
+    private Integer id;
     private String name;
     private String email;
     private Role role;

@@ -70,7 +70,7 @@ public class ApplicationController {
     @PostMapping("/offer/register")
     public ResponseEntity<String> registerToOffer(@RequestParam("userId") Integer userId,
                                                   @RequestParam("offer") Integer offerId) {
-        boolean success = registrationService.registerUserToOffer(Long.valueOf(userId), offerId);
+        boolean success = registrationService.registerUserToOffer(userId, offerId);
 
         if (!success) {
             return ResponseEntity.badRequest().body("Registrierung fehlgeschlagen (bereits registriert oder ungültige IDs).");
@@ -81,12 +81,11 @@ public class ApplicationController {
 
     @PostMapping("/offer/status")
     public ResponseEntity<String> changeRegistrationStatus(
-            @RequestParam("userId") Long userId,
+            @RequestParam("userId") Integer userId,
             @RequestParam("offerId") Integer offerId,
             @RequestParam("status") RegistrationStatus newStatus) {
 
-        OfferRegistrationKey key = new OfferRegistrationKey(userId, offerId);
-        boolean updated = registrationService.changeStatus(key, newStatus);
+        boolean updated = registrationService.changeStatus(userId, offerId, newStatus);
 
         if (updated) {
             return ResponseEntity.ok("Status erfolgreich geändert.");

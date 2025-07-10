@@ -27,7 +27,7 @@ public class RegistrationService {
         this.registrationRepository = registrationRepository;
     }
 
-    public boolean registerUserToOffer(Long userId, Integer offerId) {
+    public boolean registerUserToOffer(Integer userId, Integer offerId) {
         Optional<AppUser> userOpt = userRepository.findById(userId);
         Optional<Offer> offerOpt = offerRepository.findById(offerId);
 
@@ -55,7 +55,9 @@ public class RegistrationService {
         return false;
     }
 
-    public boolean changeStatus(OfferRegistrationKey key, RegistrationStatus newStatus) {
+    public boolean changeStatus(Integer userId, Integer offerId, RegistrationStatus newStatus) {
+        var key = new OfferRegistrationKey(userId, offerId);
+
         return registrationRepository.findById(key).map(registration -> {
             registration.setStatus(newStatus);
             registrationRepository.save(registration);

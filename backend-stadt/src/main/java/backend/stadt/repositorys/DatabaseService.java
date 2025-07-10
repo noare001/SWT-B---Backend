@@ -35,13 +35,13 @@ public class DatabaseService {
     public List<AppUser> getUser() {
         return userRepo.findAll();
     }
-    public Optional<AppUser> getUser(long id) {
+    public Optional<AppUser> getUser(Integer id) {
         return userRepo.findById(id);
     }
     public void saveUser(AppUser user){
         userRepo.save(user);
     }
-    public void deleteUser(long id){
+    public void deleteUser(Integer id){
         userRepo.deleteById(id);
     }
     public AppUserDTO login(String username, String password) {
@@ -66,6 +66,7 @@ public class DatabaseService {
 
         return new AppUserDTO(user);
     }
+
     public static String sha256Hash(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -84,6 +85,7 @@ public class DatabaseService {
             throw new RuntimeException("SHA-256 Algorithmus nicht verfügbar", e);
         }
     }
+
     //Offer
     public List<Offer> getOffers() { return offerRepo.findAll(); }
     public Offer getOfferById(int id) { return offerRepo.findFullyLoaded(id); }

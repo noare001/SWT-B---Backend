@@ -34,7 +34,11 @@ public class StadtMqttClient implements MqttCallbackExtended {
 
                 client.setCallback(this);
                 client.connect(options);
+                client.subscribe("offer/add");
                 client.subscribe("offer/update");
+                client.subscribe("cache/request");
+                client.subscribe("offer/register");
+                client.subscribe("offer/status");
                 connected = true;
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 router.setMqttClient(client);
@@ -73,7 +77,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
             }
         } catch (MqttException e) {
             e.printStackTrace();
-            System.out.println("Fehler beijm schließen der Connection!");
+            System.out.println("Fehler beim schließen der Connection!");
         }
     }
     @Override
