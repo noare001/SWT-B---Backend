@@ -1,5 +1,8 @@
 package backend.stadt.rest;
 
+import backend.stadt.enums.RegistrationStatus;
+import backend.stadt.helperClasses.OfferRegistrationKey;
+import backend.stadt.helperClasses.RegistrationService;
 import backend.stadt.repositorys.DatabaseService;
 import backend.stadt.enums.OfferStatus;
 import backend.stadt.helperClasses.AppUserDTO;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,10 +25,14 @@ public class ApplicationController {
 
     private UserService userService;
     private DatabaseService databaseService;
+
+    private final RegistrationService registrationService;
+
     @Autowired
-    public ApplicationController(UserService userService,DatabaseService databaseService){
+    public ApplicationController(UserService userService, DatabaseService databaseService, RegistrationService registrationService) {
         this.userService = userService;
         this.databaseService = databaseService;
+        this.registrationService = registrationService;
     }
 
     @GetMapping
@@ -60,5 +68,33 @@ public class ApplicationController {
     @GetMapping
     public ResponseEntity<List<Offer>> getOffer(){
         return ResponseEntity.ok(databaseService.getOffers());
+    }
+
+    @PostMapping("/offer/register")
+    public ResponseEntity<String> registerToOffer(@RequestParam("userId") Integer userId,
+                                                  @RequestParam("offer") Integer offerId) {
+        boolean success = registrationService.registerUserToOffer(Long.valueOf(userId), offerId);
+
+        if (!success) {
+            return ResponseEntity.badRequest().body("Registrierung fehlgeschlagen (bereits registriert oder ungültige IDs).");
+        }
+
+        return ResponseEntity.ok("Registrierung erfolgreich.");
+    }
+
+    @PostMapping("/offer/status")
+    public ResponseEntity<String> changeRegistrationStatus(
+            @RequestParam("userId") Long userId,
+            @RequestParam("offerId") Integer offerId,
+            @RequestParam("status") RegistrationStatus newStatus) {
+
+        OfferRegistrationKey key = new OfferRegistrationKey(userId, offerId);
+        boolean updated = registrationService.changeStatus(key, newStatus);
+
+        if (updated) {
+            return ResponseEntity.ok("Status erfolgreich geändert.");
+        } else {
+            return ResponseEntity.badRequest().body("Registrierung nicht gefunden.");
+        }
     }
 }

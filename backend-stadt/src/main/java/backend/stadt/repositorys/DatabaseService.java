@@ -37,13 +37,13 @@ public class DatabaseService {
     public List<AppUser> getUser() {
         return userRepository.findAll();
     }
-    public Optional<AppUser> getUser(int id) {
+    public Optional<AppUser> getUser(long id) {
         return userRepository.findById(id);
     }
     public void saveUser(AppUser user){
         userRepository.save(user);
     }
-    public void deleteUser(int id){
+    public void deleteUser(long id){
         userRepository.deleteById(id);
     }
     //Offer

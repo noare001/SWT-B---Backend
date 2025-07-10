@@ -123,6 +123,11 @@ public class KidsAppController {
         }
 
     }
+
+    @PostMapping("/offer/register")
+    public ResponseEntity<String> registerOffer(@RequestParam("jwt") String jwt, @RequestParam("offer") String offerId) {
+        return ResponseEntity.internalServerError().build();
+    }
 }
 
 

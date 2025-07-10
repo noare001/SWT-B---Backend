@@ -15,10 +15,7 @@ import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.EnumMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name = "Offer")
@@ -109,6 +106,9 @@ public class Offer {
     @CollectionTable(name = "OfferLanguages", joinColumns = @JoinColumn(name = "OfferId"))
     @Column(name = "Languages")
     private Set<String> languages;
+
+    @OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
+    private Set<OfferRegistration> registrations = new HashSet<>();
 
     @JsonProperty("providerName")
     public String getProviderName(){
