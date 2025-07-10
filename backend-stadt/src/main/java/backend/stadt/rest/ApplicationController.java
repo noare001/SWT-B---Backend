@@ -9,7 +9,6 @@ import backend.stadt.helperClasses.AppUserDTO;
 import backend.stadt.modells.Offer;
 import backend.stadt.user.AppUser;
 import backend.stadt.user.Role;
-import backend.stadt.user.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +22,12 @@ import java.util.Map;
 @RequestMapping("/api/stadt")
 public class ApplicationController {
 
-    private UserService userService;
     private DatabaseService databaseService;
 
     private final RegistrationService registrationService;
 
     @Autowired
-    public ApplicationController(UserService userService, DatabaseService databaseService, RegistrationService registrationService) {
-        this.userService = userService;
+    public ApplicationController(DatabaseService databaseService, RegistrationService registrationService) {
         this.databaseService = databaseService;
         this.registrationService = registrationService;
     }
@@ -38,12 +35,12 @@ public class ApplicationController {
     @GetMapping
     @RequestMapping("/login")
     public ResponseEntity<AppUserDTO> login(@RequestParam("name") String name, @RequestParam("password") String password) {
-        return ResponseEntity.ok(userService.login(name,password));
+        return ResponseEntity.ok(databaseService.login(name,password));
     }
     @GetMapping
     @RequestMapping("/register")
     public ResponseEntity<AppUserDTO> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
-        return ResponseEntity.ok(userService.register(name,password,email));
+        return ResponseEntity.ok(databaseService.register(name,password,email));
     }
 
     @GetMapping
