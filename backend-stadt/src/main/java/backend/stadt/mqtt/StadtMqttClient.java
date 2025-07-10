@@ -34,9 +34,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
 
                 client.setCallback(this);
                 client.connect(options);
-                client.subscribe("offer/add");
                 client.subscribe("offer/update");
-                client.subscribe("cache/request");
                 connected = true;
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 router.setMqttClient(client);
