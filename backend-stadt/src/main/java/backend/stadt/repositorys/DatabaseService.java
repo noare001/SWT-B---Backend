@@ -35,13 +35,13 @@ public class DatabaseService {
     public List<AppUser> getUser() {
         return userRepo.findAll();
     }
-    public Optional<AppUser> getUser(int id) {
+    public Optional<AppUser> getUser(long id) {
         return userRepo.findById(id);
     }
     public void saveUser(AppUser user){
         userRepo.save(user);
     }
-    public void deleteUser(int id){
+    public void deleteUser(long id){
         userRepo.deleteById(id);
     }
     public AppUserDTO login(String username, String password) {
