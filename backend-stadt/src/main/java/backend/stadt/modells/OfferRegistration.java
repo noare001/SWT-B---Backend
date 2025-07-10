@@ -3,6 +3,8 @@ package backend.stadt.modells;
 import backend.stadt.enums.RegistrationStatus;
 import backend.stadt.helperClasses.OfferRegistrationKey;
 import backend.stadt.user.AppUser;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,16 +27,27 @@ public class OfferRegistration {
     @ManyToOne
     @MapsId("userId")
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private AppUser user;
 
     @ManyToOne
     @MapsId("offerId")
     @JoinColumn(name = "offer_id")
+    @JsonIgnore
     private Offer offer;
 
     @Enumerated(EnumType.STRING)
     private RegistrationStatus status;
 
     private LocalDate registeredAt = LocalDate.now();
+
+    @JsonProperty("offerId")
+    public Integer getOfferId(){
+        return offer.getOfferId();
+    }
+    @JsonProperty("userId")
+    public Integer getProviderName(){
+        return user.getId();
+    }
 }
 

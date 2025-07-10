@@ -5,9 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface UserRepository extends JpaRepository<AppUser, Long> {
+public interface UserRepository extends JpaRepository<AppUser, Integer> {
     AppUser getAppUserByNameAndPassword(String name, String password);
     boolean existsByName(String username);
 
-    AppUser getById(long id);
+    AppUser getById(Integer id);
 }

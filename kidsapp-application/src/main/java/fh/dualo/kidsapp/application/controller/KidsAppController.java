@@ -2,6 +2,7 @@ package fh.dualo.kidsapp.application.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fh.dualo.kidsapp.application.cache.KidsAppCache;
+import fh.dualo.kidsapp.application.enums.RegistrationStatus;
 import fh.dualo.kidsapp.application.mqtt.MessageRouter;
 import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -125,8 +126,56 @@ public class KidsAppController {
     }
 
     @PostMapping("/offer/register")
-    public ResponseEntity<String> registerOffer(@RequestParam("jwt") String jwt, @RequestParam("offer") String offerId) {
-        return ResponseEntity.internalServerError().build();
+    public ResponseEntity<String> registerOffer(@RequestParam("jwt") String jwt,
+                                                @RequestParam("offer") String offerId) {
+        try {
+            Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
+            Integer userId = (Integer) claims.get("id");
+            Integer parsedOfferId = Integer.parseInt(offerId);
+
+            // JSON-Nachricht bauen
+            String payload = String.format("{\"userId\": %d, \"offerId\": %d}", userId, parsedOfferId);
+
+            // MQTT senden
+            router.sendMessage("offer/register", payload);
+
+            return ResponseEntity.ok("Registrierung wurde gesendet.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Fehler: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/offer/status")
+    public ResponseEntity<String> changeStatus(@RequestParam("jwt") String jwt,
+                                               @RequestParam("offer") String offerId,
+                                               @RequestParam("status") RegistrationStatus status) {
+
+        try {
+            Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
+
+            Integer userId = (Integer) claims.get("id");
+            Integer parsedOfferId = Integer.parseInt(offerId);
+            RegistrationStatus parsedStatus = RegistrationStatus.valueOf(status.name());
+
+            var role = claims.get("role");
+
+//            if (!role.equals("AUTHOR")) {
+//                return ResponseEntity.badRequest().build();
+//            }
+
+            // Status jetzt mit im JSON
+            String payload = String.format(
+                    "{\"userId\": %d, \"offerId\": %d, \"status\": \"%s\"}",
+                    userId, parsedOfferId, parsedStatus.name()
+            );
+
+            // Nachricht senden
+            router.sendMessage("offer/status", payload);
+
+            return ResponseEntity.ok("Statusänderung wurde gesendet.");
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("Fehler: " + e.getMessage());
+        }
     }
 }
 

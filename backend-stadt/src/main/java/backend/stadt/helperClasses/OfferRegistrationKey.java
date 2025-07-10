@@ -15,7 +15,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OfferRegistrationKey implements Serializable {
-    private Long userId;
+    private Integer userId;
     private Integer offerId;
 
     // equals() und hashCode() implementieren!
