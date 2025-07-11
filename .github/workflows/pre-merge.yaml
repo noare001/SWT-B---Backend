@@ -1,15 +1,15 @@
-# TEst
 name: Pre Merge Checks
 
 on:
   pull_request:
 
 permissions:
-    contents: read
-    pull-requests: write
+  contents: read
+  pull-requests: write
 
 jobs:
   check:
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -18,18 +18,30 @@ jobs:
         project:
           - backend-stadt
           - mqtt-connector
+          - kidsapp-application
 
-    runs-on: ${{ matrix.os }}
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
-      - name: Set up JDK
+
+      - name: Set up JDK ${{ matrix.jdk }}
         uses: actions/setup-java@v4.5.0
         with:
-          java-version: '${{ matrix.jdk }}'
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: ${{ matrix.jdk }}
           cache: maven
-      - name: Build with Maven of ${{ matrix.project }}
-        if: ${{ matrix.project != '' }}
-        working-directory: ${{ matrix.project }}
+
+      - name: Build & test ${{ matrix.project }} with Maven
+        working-directory: ./${{ matrix.project }}
         run: mvn --batch-mode --update-snapshots verify
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Build ${{ matrix.project }} image (PR)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./${{ matrix.project }}
+          file: ./${{ matrix.project }}/Dockerfile
+          push: false
+          tags: ${{ matrix.project }}:pr-${{ github.event.pull_request.number }}
