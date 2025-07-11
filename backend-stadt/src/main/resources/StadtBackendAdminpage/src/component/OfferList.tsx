@@ -125,8 +125,8 @@ export default function OfferList() {
             </div>
             <div>
                 {offers.filter(o => filter(o)).map(o => (
-                    <div key={o.offerId} className="offer-card">
-                        <div className="offer-summary">
+                    <div key={o.offerId} className="data-card">
+                        <div className="data-summary">
                             <span><strong>#{o.offerId}</strong> – {o.name}</span>
                             <span>{o.city ?? "-"}</span>
                             <span>
@@ -134,7 +134,7 @@ export default function OfferList() {
                                 {getActionButtons(o)}
                             </span>
                         </div>
-                        <div className="offer-details">
+                        <div className="data-details">
                             <div><strong>Provider:</strong> {o.providerName}</div>
                             <div><strong>PLZ:</strong> {o.postalCode}</div>
                             <div><strong>Straße:</strong> {o.street}</div>

@@ -66,7 +66,6 @@ public class DatabaseService {
 
         return new AppUserDTO(user);
     }
-
     public static String sha256Hash(String input) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -85,7 +84,6 @@ public class DatabaseService {
             throw new RuntimeException("SHA-256 Algorithmus nicht verfügbar", e);
         }
     }
-
     //Offer
     public List<Offer> getOffers() { return offerRepo.findAll(); }
     public Offer getOfferById(int id) { return offerRepo.findFullyLoaded(id); }
@@ -95,10 +93,9 @@ public class DatabaseService {
     public void deleteOffer(int id){
         offerRepo.deleteById(id);
     }
-    //Provider
-    public List<Provider> getProviders() { return providerRepo.findAll(); }
-    public Provider getProviderById(int id) { return providerRepo.findById(id); }
-
+    public String getOfferKey(Offer offer){
+        return offer.getOfferId() + "-" + offer.getProvider().getId();
+    }
     public String getCache() throws JsonProcessingException {
         List<Offer> offerList = offerRepo.findAllFullyLoaded();
         Map<String, Offer> map = new HashMap<>();
@@ -109,8 +106,13 @@ public class DatabaseService {
         );
         return MapperUtil.getObjectMapper().writeValueAsString(map);
     }
-
-    public String getOfferKey(Offer offer){
-        return offer.getOfferId() + "-" + offer.getProvider().getId();
+    //Provider
+    public List<Provider> getProviders() { return providerRepo.findAll(); }
+    public Provider getProviderById(int id) { return providerRepo.findById(id); }
+    public void saveProvider(Provider provider){
+        providerRepo.save(provider);
+    }
+    public void deleteProvider(Long id){
+        providerRepo.deleteById(id);
     }
 }

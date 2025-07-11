@@ -107,6 +107,16 @@ public class AdminController {
     public ResponseEntity<List<Provider>> getProvider() {
         return ResponseEntity.ok(databaseService.getProviders());
     }
+    @PostMapping("/provider")
+    public ResponseEntity<List<Provider>> addProvider(@RequestBody Provider provider) {
+        databaseService.saveProvider(provider);
+        return ResponseEntity.ok(databaseService.getProviders());
+    }
+    @DeleteMapping("/provider/{id}")
+    public ResponseEntity<List<Provider>> deleteProvider(@PathVariable("id") long id) {
+        databaseService.deleteProvider(id);
+        return ResponseEntity.ok(databaseService.getProviders());
+    }
 
 
     private void sendUpdateOfferMessage(Offer offer) throws JsonProcessingException, MqttException {

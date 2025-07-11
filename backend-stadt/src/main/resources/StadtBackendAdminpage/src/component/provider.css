@@ -1,0 +1,27 @@
+.provicer-actions{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.provicer-actions button{
+    margin: 0;
+}
+
+.provider-form {
+    margin: 1em 0;
+    padding: 1em;
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.provider-form input {
+    padding: 0.5em;
+    font-size: 1em;
+}
+.provider-form button {
+    width: fit-content;
+    padding: 0.5em 1em;
+}
