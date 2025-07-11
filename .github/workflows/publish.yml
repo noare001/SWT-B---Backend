@@ -17,6 +17,7 @@ jobs:
         project:
           - backend-stadt
           - mqtt-connector
+          - kidsapp-application
 
     steps:
       - name: Checkout
