@@ -26,19 +26,5 @@ services:
       SPRING_DATASOURCE_USERNAME: sa
       SPRING_DATASOURCE_PASSWORD:
 
-  kidsapp-application:
-    build:
-      context: ../kidsapp-application
-      dockerfile: Dockerfile
-    container_name: kidsapp-application
-    ports:
-      - "8081:8080"
-    depends_on:
-      - h2
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/~/test
-      SPRING_DATASOURCE_USERNAME: sa
-      SPRING_DATASOURCE_PASSWORD:
-
 volumes:
   h2-data:
