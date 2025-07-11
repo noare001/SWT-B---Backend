@@ -10,4 +10,6 @@ public interface UserRepository extends JpaRepository<AppUser, Integer> {
     boolean existsByName(String username);
 
     AppUser getById(Integer id);
+
+    List<AppUser> findAllByProviderId(Integer providerId);
 }

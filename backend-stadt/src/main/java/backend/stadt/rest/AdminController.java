@@ -34,13 +34,16 @@ public class AdminController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<?> getStatus() {
+    public ResponseEntity<?> getMqttConnectionStatus() {
         if(router.isConnected()){
             return ResponseEntity.ok().build();
         }else{
             return ResponseEntity.notFound().build();
         }
     }
+    /**
+     * User
+     */
     @GetMapping("/user")
     public List<AppUserDTO> getAllUsers() {
         return databaseService.getUser().stream().map(AppUserDTO::new).toList();
@@ -68,6 +71,9 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
 
+    /**
+     * Offer
+     */
     @GetMapping("/offer")
     public ResponseEntity<List<Offer>> getOffer() {
         return ResponseEntity.ok(databaseService.getOffers());
@@ -103,6 +109,10 @@ public class AdminController {
         sendUpdateOfferMessage(offer);
         return ResponseEntity.ok().build();
     }
+
+    /**
+     * Provider
+     */
     @GetMapping("/provider")
     public ResponseEntity<List<Provider>> getProvider() {
         return ResponseEntity.ok(databaseService.getProviders());
@@ -113,7 +123,7 @@ public class AdminController {
         return ResponseEntity.ok(databaseService.getProviders());
     }
     @DeleteMapping("/provider/{id}")
-    public ResponseEntity<List<Provider>> deleteProvider(@PathVariable("id") long id) {
+    public ResponseEntity<List<Provider>> deleteProvider(@PathVariable("id") int id) {
         databaseService.deleteProvider(id);
         return ResponseEntity.ok(databaseService.getProviders());
     }

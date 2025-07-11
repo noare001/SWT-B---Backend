@@ -7,8 +7,10 @@ import backend.stadt.user.AppUser;
 import backend.stadt.user.Role;
 import backend.stadt.util.MapperUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -112,7 +114,15 @@ public class DatabaseService {
     public void saveProvider(Provider provider){
         providerRepo.save(provider);
     }
-    public void deleteProvider(Long id){
-        providerRepo.deleteById(id);
+    @Transactional
+    public void deleteProvider(int id){
+        Provider provider = providerRepo.findById(id);
+        List<AppUser> users = userRepo.findAllByProviderId(id);
+        for (AppUser user : users) {
+            user.setProvider(null);
+            user.setRole(Role.USER);
+        }
+        userRepo.saveAll(users);
+        providerRepo.delete(provider);
     }
 }
