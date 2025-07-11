@@ -1,24 +1,44 @@
+version: '3.8'
+
 services:
-  backend-stadt:
-    build:
-      context: ./backend-stadt
+  h2:
+    image: oscarfonts/h2
+    container_name: h2-db
+    ports:
+      - "1521:1521"   # Port für JDBC
+      - "81:81"       # Web-Console
+    environment:
+      H2_OPTIONS: "-ifNotExists"
+    volumes:
+      - h2-data:/opt/h2-data
+
+  app:
+    build: 
+      context: ../Node-Docker-CI
       dockerfile: Dockerfile
-    image: backend-stadt:latest
+    container_name: my-github-app
     ports:
       - "8080:8080"
+    depends_on:
+      - h2
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/~/test
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD:
 
   kidsapp-application:
     build:
-      context: ./kidsapp-application
+      context: ../kidsapp-application
       dockerfile: Dockerfile
-    image: kidsapp-application:latest
+    container_name: kidsapp-application
     ports:
       - "8081:8080"
+    depends_on:
+      - h2
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:h2:tcp://h2-db:1521/~/test
+      SPRING_DATASOURCE_USERNAME: sa
+      SPRING_DATASOURCE_PASSWORD:
 
-  mqtt-connector:
-    build:
-      context: ./mqtt-connector
-      dockerfile: Dockerfile
-    image: mqtt-connector:latest
-    ports:
-      - "8082:8080"
+volumes:
+  h2-data:
