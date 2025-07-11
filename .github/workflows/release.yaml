@@ -16,11 +16,14 @@ jobs:
       matrix:
         project:
           - backend-stadt
-          - mqtt-connector
+          - mqtt-connector    # nur diese beiden
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
