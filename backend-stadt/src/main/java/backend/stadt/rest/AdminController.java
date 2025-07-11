@@ -96,10 +96,11 @@ public class AdminController {
         return ResponseEntity.ok().build();
     }
     @PutMapping("/offer/{id}/status/{status}")
-    public ResponseEntity<Void> updateStatus(@PathVariable("id") int id, @PathVariable("status") String newStatus) {
+    public ResponseEntity<Void> updateStatus(@PathVariable("id") int id, @PathVariable("status") String newStatus) throws MqttException, JsonProcessingException {
         Offer offer = databaseService.getOfferById(id);
         offer.setStatus(OfferStatus.valueOf(newStatus));
         databaseService.saveOffer(offer);
+        sendUpdateOfferMessage(offer);
         return ResponseEntity.ok().build();
     }
     @GetMapping("/provider")
@@ -110,8 +111,7 @@ public class AdminController {
 
     private void sendUpdateOfferMessage(Offer offer) throws JsonProcessingException, MqttException {
         ObjectMapper mapper = MapperUtil.getObjectMapper();
-        String key = offer.getOfferId() + "-" + offer.getName();
-        JsonNode jsonNode = mapper.valueToTree(Map.of(key, offer));
+        JsonNode jsonNode = mapper.valueToTree(Map.of(databaseService.getOfferKey(offer), offer));
         router.sendMessage("offer/processed", mapper.writeValueAsString(jsonNode));
     }
 }

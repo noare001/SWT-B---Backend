@@ -110,7 +110,7 @@ public class DatabaseService {
         return MapperUtil.getObjectMapper().writeValueAsString(map);
     }
 
-    private String getOfferKey(Offer offer){
+    public String getOfferKey(Offer offer){
         return offer.getOfferId() + "-" + offer.getProvider().getId();
     }
 }

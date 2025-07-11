@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Collection;
 import java.util.List;
@@ -88,6 +90,36 @@ public class KidsAppController {
                 .ok()
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(appCache.getOffer(id));
+    }
+    /**
+     * Deleted den Offer mit der Id
+     * Bsp: localhost:8090/api/offer/{id}?jwt={jwt}
+     */
+    @DeleteMapping("/offer/{id}")
+    public Mono<ResponseEntity<Object>> deleteOffer(@PathVariable("id") int id,
+                                                    @RequestParam("jwt") String jwt) {
+        Map<String,Object> claims = userService.getJwtUtil().getClaims(jwt);
+        String providerId = String.valueOf(claims.get("providerId"));
+        String userId = String.valueOf(claims.get("id"));
+
+        return WebClient.builder()
+                .baseUrl("http://localhost:8082/api/stadt")
+                .build()
+                .delete()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/offer")
+                        .queryParam("providerId", providerId)
+                        .queryParam("userId", userId)
+                        .queryParam("offerId", id)
+                        .build())
+                .exchangeToMono(clientResponse -> {
+                    if (clientResponse.statusCode().is2xxSuccessful()) {
+                        appCache.delete(id + "-" + providerId); // das darf synchron sein
+                        return Mono.just(ResponseEntity.ok().build());
+                    } else {
+                        return Mono.just(ResponseEntity.badRequest().build());
+                    }
+                });
     }
     /**
      * Returnt den Offer des Providers zu dem der Autor gehört

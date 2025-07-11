@@ -83,6 +83,7 @@ public class StadtMqttClient implements MqttCallbackExtended {
     @Override
     public void connectComplete(boolean b, String s) {
         try {
+            System.out.println("Sending Message in stadt/online");
             MqttMessage message = new MqttMessage("".getBytes());
             message.setRetained(true);
             client.publish("stadt/online", message);

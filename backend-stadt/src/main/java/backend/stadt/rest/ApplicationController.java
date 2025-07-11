@@ -3,6 +3,7 @@ package backend.stadt.rest;
 import backend.stadt.enums.RegistrationStatus;
 import backend.stadt.helperClasses.OfferRegistrationKey;
 import backend.stadt.helperClasses.RegistrationService;
+import backend.stadt.modells.Provider;
 import backend.stadt.repositorys.DatabaseService;
 import backend.stadt.enums.OfferStatus;
 import backend.stadt.helperClasses.AppUserDTO;
@@ -59,7 +60,23 @@ public class ApplicationController {
         newOffer.setStatus(OfferStatus.PROCESSING);
         newOffer.setProvider(user.getProvider());
         databaseService.saveOffer(newOffer);
-        return ResponseEntity.ok(Map.of(newOffer.getOfferId() + "-" + newOffer.getName(), newOffer));
+        return ResponseEntity.ok(Map.of(databaseService.getOfferKey(newOffer), newOffer));
+    }
+
+    @DeleteMapping("/offer")
+    public ResponseEntity<Void> deleteOffer(
+            @RequestParam("providerId") int providerId,
+            @RequestParam("userId") int userId,
+            @RequestParam("offerId") int offerId
+    ){
+        Offer offer = databaseService.getOfferById(offerId);
+        AppUser user = databaseService.getUser(userId).orElseThrow();
+        Provider provider = databaseService.getProviderById(providerId);
+        if(provider != null && user.getProvider().getId() == providerId && offer.getProvider().getId() == providerId){
+            databaseService.deleteOffer(offerId);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping

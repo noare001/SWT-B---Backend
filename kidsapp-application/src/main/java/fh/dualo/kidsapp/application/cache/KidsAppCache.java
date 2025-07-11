@@ -58,7 +58,15 @@ public class KidsAppCache {
         }
     }
     public Collection<JsonNode> getOffer() {
-        return state.getOffer().values();
+        Map<String, JsonNode> data = state.getOffer();
+        if(state instanceof CacheLoading){
+            if(!data.isEmpty()){
+                System.out.println("\u001B[32mCache erfolgreich geladen!\u001B[0m");
+                state = new CacheReady(data);
+            }
+            return data.values();
+        }
+        return data.values();
     }
     public List<JsonNode> getProviderOffer(String providerId) {
         if (providerId == null || providerId.isBlank()) {
@@ -77,7 +85,8 @@ public class KidsAppCache {
         return null;
     }
 
-
-
+    public void delete(String key){
+        state.getOffer().remove(key);
+    }
 
 }
