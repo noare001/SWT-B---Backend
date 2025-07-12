@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   backend-stadt:
-    image: ghcr.io/noare001/swt-b---backend/backend-stadt:latest
+    image: ghcr.io/noare001/backend-stadt:latest
     container_name: backend-stadt
     ports:
       - "8082:8082"
@@ -10,7 +10,7 @@ services:
       - mqtt-connector
 
   mqtt-connector:
-    image: ghcr.io/noare001/swt-b---backend/mqtt-connector:latest
+    image: ghcr.io/noare001/mqtt-connector:latest
     container_name: mqtt-connector
     ports:
       - "8081:8081"
@@ -19,7 +19,7 @@ services:
       - mqtt-data:/app/data
 
   kidsapp-application:
-    image: ghcr.io/noare001/swt-b---backend/kidsapp-application:latest
+    image: ghcr.io/noare001/kidsapp-application:latest
     container_name: kidsapp-application
     ports:
       - "8090:8090"
