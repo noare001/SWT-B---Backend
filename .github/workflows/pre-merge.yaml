@@ -17,7 +17,8 @@ jobs:
         jdk: [21]
         project:
           - backend-stadt
-          - mqtt-connector    # nur diese beiden
+          - mqtt-connector
+          - kidsapp-application
 
     steps:
       - name: Checkout code
