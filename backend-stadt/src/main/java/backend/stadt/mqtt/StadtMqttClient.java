@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class StadtMqttClient implements MqttCallbackExtended {
 
-    @Value("${mqtt-connector-url")
+    @Value("${mqtt-connector-url}")
     private String BROKER_URL;
     private static final String CLIENT_ID = "stadt-client";
     private MqttClient client;
