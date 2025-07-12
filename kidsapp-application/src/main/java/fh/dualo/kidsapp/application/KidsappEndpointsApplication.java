@@ -17,6 +17,7 @@ public class KidsappEndpointsApplication implements WebMvcConfigurer {
 		registry
 				.addMapping("/api/**")
 				.allowedOrigins("http://localhost:5173", "http://localhost:8080")
+				.allowedOriginPatterns("*")//Ich gebe auf alter
 				.allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
 				.allowCredentials(true);
 	}
