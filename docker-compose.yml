@@ -27,5 +27,13 @@ services:
       - mqtt-connector
       - backend-stadt
 
+  kidsapp-frontend:
+    image: ghcr.io/mikdi73/kidsapp-frontend:latest
+    container_name: kidsapp-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - kidsapp-application
+
 volumes:
   mqtt-data:
