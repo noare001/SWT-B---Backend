@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  backend-stadt:
+    image: ghcr.io/noare001/swt-b---backend/backend-stadt:latest
+    container_name: backend-stadt
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mqtt-connector
+
+  mqtt-connector:
+    image: ghcr.io/noare001/swt-b---backend/mqtt-connector:latest
+    container_name: mqtt-connector
+    ports:
+      - "8081:8081"   # HTTP REST
+      - "1883:1883"   # MQTT Broker
+    volumes:
+      - mqtt-data:/app/data
+
+  kidsapp:
+    image: ghcr.io/noare001/swt-b---backend/kidsapp-application:latest
+    container_name: kidsapp
+    ports:
+      - "8090:8090"
+    depends_on:
+      - mqtt-connector
+
+volumes:
+  mqtt-data:
