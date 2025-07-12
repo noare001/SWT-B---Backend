@@ -2,6 +2,7 @@ package fh.dualo.kidsapp.application.user;
 
 import jakarta.annotation.PostConstruct;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,10 +17,12 @@ public class KidsAppUserService {
     private WebClient webClient;
     @Getter
     private JwtUtil jwtUtil;
+    @Value("${backend.base-url}")
+    private String backendBaseUrl;
 
     @PostConstruct
     public void init() {
-        webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt").build();
+        webClient = WebClient.builder().baseUrl(backendBaseUrl+"/api/stadt").build();
         jwtUtil = new JwtUtil();
     }
 
