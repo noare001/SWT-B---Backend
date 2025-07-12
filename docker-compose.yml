@@ -18,13 +18,14 @@ services:
     volumes:
       - mqtt-data:/app/data
 
-  kidsapp:
+  kidsapp-application:
     image: ghcr.io/noare001/swt-b---backend/kidsapp-application:latest
-    container_name: kidsapp
+    container_name: kidsapp-application
     ports:
       - "8090:8090"
     depends_on:
       - mqtt-connector
+      - backend-stadt
 
 volumes:
   mqtt-data:

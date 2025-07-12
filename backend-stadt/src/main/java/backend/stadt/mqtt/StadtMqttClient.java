@@ -3,12 +3,14 @@ package backend.stadt.mqtt;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.eclipse.paho.client.mqttv3.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StadtMqttClient implements MqttCallbackExtended {
 
-    private static final String BROKER_URL = "tcp://localhost:1883";
+    @Value("${mqtt-connector-url")
+    private String BROKER_URL;
     private static final String CLIENT_ID = "stadt-client";
     private MqttClient client;
     private MessageRouter router;

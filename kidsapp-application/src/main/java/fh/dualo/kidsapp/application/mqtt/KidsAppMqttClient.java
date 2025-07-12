@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class KidsAppMqttClient implements MqttCallback{
 
     @Value("${mqtt-connector-url}")
-    private static final String BROKER_URL = "tcp://localhost:1883";
+    private String BROKER_URL;
     private static final String CLIENT_ID = "kidsapp-client";
 
     private MqttClient client;
