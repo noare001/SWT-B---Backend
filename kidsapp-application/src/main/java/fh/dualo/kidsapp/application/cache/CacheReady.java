@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class CacheReady extends State {
@@ -12,16 +13,13 @@ public class CacheReady extends State {
     private Map<String, JsonNode> cache;
 
     public CacheReady(Map<String, JsonNode> cache) {
-        this.cache = cache;
+        this.cache = new ConcurrentHashMap<>();
+        this.cache.putAll(cache);
     }
 
     @Override
     public Map<String, JsonNode> getOffer() {
             return cache.entrySet().stream()
-                    .filter(entry -> {
-                        JsonNode statusNode = entry.getValue().get("status");
-                        return statusNode != null && "ACCEPTED".equals(statusNode.asText());
-                    })
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 

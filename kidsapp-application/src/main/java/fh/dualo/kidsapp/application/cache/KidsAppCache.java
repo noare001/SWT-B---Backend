@@ -59,6 +59,8 @@ public class KidsAppCache {
         System.out.println("HELLOOOO");
         if(state instanceof CacheReady){
             ((CacheReady) state).update(newOffer);
+        }else{
+            init();
         }
     }
     public Collection<JsonNode> getOffer() {
@@ -68,9 +70,19 @@ public class KidsAppCache {
                 System.out.println("\u001B[32mCache erfolgreich geladen!\u001B[0m");
                 state = new CacheReady(data);
             }
-            return data.values();
+            return data.values().stream()
+                    .filter(jsonNode -> {
+                        JsonNode status = jsonNode.get("status");
+                        return status != null && "ACCEPTED".equals(status.asText());
+                    })
+                    .toList();
         }
-        return data.values();
+        return data.values().stream()
+                .filter(jsonNode -> {
+                    JsonNode status = jsonNode.get("status");
+                    return status != null && "ACCEPTED".equals(status.asText());
+                })
+                .toList();
     }
     public List<JsonNode> getProviderOffer(String providerId) {
         if (providerId == null || providerId.isBlank()) {
