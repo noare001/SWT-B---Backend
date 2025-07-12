@@ -7,6 +7,7 @@ import fh.dualo.kidsapp.application.mqtt.MessageRouter;
 import fh.dualo.kidsapp.application.user.KidsAppUserService;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +26,8 @@ public class KidsAppController {
     private KidsAppCache appCache;
     private MessageRouter router;
     private KidsAppUserService userService;
+    @Value("${backend.base-url}")
+    private String backendBaseUrl;
 
     @Autowired
     public KidsAppController(KidsAppUserService userService, KidsAppCache appCache, MessageRouter router) {
@@ -103,7 +106,7 @@ public class KidsAppController {
         String userId = String.valueOf(claims.get("id"));
 
         return WebClient.builder()
-                .baseUrl("http://localhost:8082/api/stadt")
+                .baseUrl(backendBaseUrl+"/api/stadt")
                 .build()
                 .delete()
                 .uri(uriBuilder -> uriBuilder

@@ -7,12 +7,14 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KidsAppMqttClient implements MqttCallback{
 
+    @Value("${mqtt-connector-url}")
     private static final String BROKER_URL = "tcp://localhost:1883";
     private static final String CLIENT_ID = "kidsapp-client";
 

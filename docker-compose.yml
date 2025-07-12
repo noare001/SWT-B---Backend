@@ -13,8 +13,8 @@ services:
     image: ghcr.io/noare001/swt-b---backend/mqtt-connector:latest
     container_name: mqtt-connector
     ports:
-      - "8081:8081"   # HTTP REST
-      - "1883:1883"   # MQTT Broker
+      - "8081:8081"
+      - "1883:1883"
     volumes:
       - mqtt-data:/app/data
 

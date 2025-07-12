@@ -2,6 +2,7 @@ package fh.dualo.kidsapp.application.cache;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -17,9 +18,12 @@ public class KidsAppCache {
     private State state;
     private WebClient webClient;
 
+    @Value("${backend.base-url}")
+    private String backendBaseUrl;
+
     @PostConstruct
     public void init() {
-        webClient = WebClient.builder().baseUrl("http://localhost:8082/api/stadt").build();
+        webClient = WebClient.builder().baseUrl(backendBaseUrl+"/api/stadt").build();
         state = new CacheLoading(webClient);
         new Thread(this::fillCache).start();
     }
