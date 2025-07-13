@@ -1,8 +1,6 @@
 package backend.stadt.rest;
 
 import backend.stadt.enums.RegistrationStatus;
-import backend.stadt.helperClasses.OfferRegistrationKey;
-import backend.stadt.helperClasses.RegistrationService;
 import backend.stadt.modells.Provider;
 import backend.stadt.repositorys.DatabaseService;
 import backend.stadt.enums.OfferStatus;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,33 +22,30 @@ public class ApplicationController {
 
     private DatabaseService databaseService;
 
-    private final RegistrationService registrationService;
-
     @Autowired
-    public ApplicationController(DatabaseService databaseService, RegistrationService registrationService) {
+    public ApplicationController(DatabaseService databaseService) {
         this.databaseService = databaseService;
-        this.registrationService = registrationService;
     }
 
-    @GetMapping
-    @RequestMapping("/login")
+    @GetMapping("/login")
     public ResponseEntity<AppUserDTO> login(@RequestParam("name") String name, @RequestParam("password") String password) {
         return ResponseEntity.ok(databaseService.login(name,password));
     }
-    @GetMapping
-    @RequestMapping("/register")
+    @GetMapping("/register")
     public ResponseEntity<AppUserDTO> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
         return ResponseEntity.ok(databaseService.register(name,password,email));
     }
+    @GetMapping("/registrations")
+    public ResponseEntity<Map<String, RegistrationStatus>> getRegistrations() {
+        return ResponseEntity.ok(databaseService.getRegistrations());
+    }
 
-    @GetMapping
-    @RequestMapping("/cache")
-    public ResponseEntity<String> getCache() throws JsonProcessingException {
+    @GetMapping("/offer")
+    public ResponseEntity<Map<String, Offer>> getCache() throws JsonProcessingException {
         return ResponseEntity.ok(databaseService.getCache());
     }
 
-    @PostMapping
-    @RequestMapping("/offer")
+    @PostMapping("/offer")
     public ResponseEntity<Map<String,Offer>> addOffer(@RequestParam("id") int userId, @RequestBody Offer newOffer) {
         AppUser user = databaseService.getUser(userId).orElseThrow();
         if(!user.getRole().equals(Role.AUTHOR) || user.getProvider() == null){
@@ -82,32 +76,5 @@ public class ApplicationController {
     @GetMapping
     public ResponseEntity<List<Offer>> getOffer(){
         return ResponseEntity.ok(databaseService.getOffers());
-    }
-
-    @PostMapping("/offer/register")
-    public ResponseEntity<String> registerToOffer(@RequestParam("userId") Integer userId,
-                                                  @RequestParam("offer") Integer offerId) {
-        boolean success = registrationService.registerUserToOffer(userId, offerId);
-
-        if (!success) {
-            return ResponseEntity.badRequest().body("Registrierung fehlgeschlagen (bereits registriert oder ungültige IDs).");
-        }
-
-        return ResponseEntity.ok("Registrierung erfolgreich.");
-    }
-
-    @PostMapping("/offer/status")
-    public ResponseEntity<String> changeRegistrationStatus(
-            @RequestParam("userId") Integer userId,
-            @RequestParam("offerId") Integer offerId,
-            @RequestParam("status") RegistrationStatus newStatus) {
-
-        boolean updated = registrationService.changeStatus(userId, offerId, newStatus);
-
-        if (updated) {
-            return ResponseEntity.ok("Status erfolgreich geändert.");
-        } else {
-            return ResponseEntity.badRequest().body("Registrierung nicht gefunden.");
-        }
     }
 }

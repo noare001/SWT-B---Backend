@@ -2,7 +2,8 @@ package backend.stadt.mqtt;
 
 
 import backend.stadt.enums.RegistrationStatus;
-import backend.stadt.helperClasses.RegistrationService;
+import backend.stadt.modells.OfferRegistration;
+import backend.stadt.repositorys.DatabaseService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -23,11 +24,11 @@ public class MessageRouter {
     @Setter
     private MqttClient client;
     private List<SavedMessage> savedMessages;
-    private RegistrationService registrationService;
+    private DatabaseService databaseService;
 
     @Autowired
-    public MessageRouter(RegistrationService registrationService) {
-        this.registrationService = registrationService;
+    public MessageRouter(DatabaseService databaseService) {
+        this.databaseService = databaseService;
         savedMessages = new ArrayList<>();
     }
 
@@ -36,8 +37,8 @@ public class MessageRouter {
             case "offer/register":
                 handleRegistration(payload);
                 break;
-            case "offer/status":
-                handleStatusChange(payload);
+            case "registration/delete":
+                deleteRegistration(payload);
                 break;
             default:
                 System.out.println("Unknown topic: " + topic);
@@ -87,43 +88,32 @@ public class MessageRouter {
             Integer userId = json.get("userId").asInt();
             Integer offerId = json.get("offerId").asInt();
 
-            boolean success = registrationService.registerUserToOffer(userId, offerId);
+            OfferRegistration registration = databaseService.registerUserToOffer(userId, offerId);
 
-            if (success) {
+            if (registration != null) {
                 System.out.printf("Registrierung erfolgreich (userId=%d, offerId=%d)%n", userId, offerId);
-                // optional Rückmeldung senden
-                sendMessage("offer/register/response", String.format("{\"userId\":%d,\"offerId\":%d,\"status\":\"SUCCESS\"}", userId, offerId));
+                sendMessage("registration/processed", String.format("{\"userId\":%d,\"offerId\":%d,\"status\":\"%s\"}", userId, offerId, registration.getStatus().name()));
             } else {
                 System.out.printf("Registrierung fehlgeschlagen (userId=%d, offerId=%d)%n", userId, offerId);
-                sendMessage("offer/register/response", String.format("{\"userId\":%d,\"offerId\":%d,\"status\":\"FAILED\"}", userId, offerId));
+                sendMessage("registration/processed", String.format("{\"userId\":%d,\"offerId\":%d,\"status\":\"%s\"}", userId, offerId,RegistrationStatus.DECLINED.name()));
             }
 
         } catch (Exception e) {
             System.err.println("Fehler bei Registrierung über MQTT: " + e.getMessage());
         }
     }
-    private void handleStatusChange(String payload) {
+    private void deleteRegistration(String payload) {
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode json = mapper.readTree(payload);
 
-            Integer userId = json.get("userId").asInt();
-            Integer offerId = json.get("offerId").asInt();
-            RegistrationStatus status = RegistrationStatus.valueOf(json.get("status").asText());
+            int userId = json.get("userId").asInt();
+            int offerId = json.get("offerId").asInt();
 
-            var success = registrationService.changeStatus(userId, offerId, status);
-
-            if (success) {
-                System.out.printf("Statusveränderung erfolgreich (userId=%d, offerId=%d)%n", userId, offerId);
-                // optional Rückmeldung senden
-                sendMessage("offer/status/response", String.format("{\"userId\":%d,\"offerId\":%d,\"status\":\"SUCCESS\"}", userId, offerId));
-            } else {
-                System.out.printf("Statusveränderung fehlgeschlagen (userId=%d, offerId=%d)%n", userId, offerId);
-                sendMessage("offer/status/response", String.format("{\"userId\":%d,\"offerId\":%d,\"status\":\"FAILED\"}", userId, offerId));
-            }
+            databaseService.deleteRegistration(userId,offerId);
 
         } catch (Exception e){
-            System.err.println("Fehler bei StatusChange: " + e.getMessage());
+            System.err.println("Fehler beim Löschen: " + e.getMessage());
         }
     }
 

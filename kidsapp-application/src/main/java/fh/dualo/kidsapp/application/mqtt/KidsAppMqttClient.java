@@ -38,6 +38,7 @@ public class KidsAppMqttClient implements MqttCallback{
                 client.setCallback(this);
                 client.connect();
                 client.subscribe("offer/processed");
+                client.subscribe("registration/processed");
                 client.subscribe("stadt/online");
                 System.out.println("\u001B[32mVerbunden!\u001B[0m");
                 connected = true;
@@ -57,7 +58,7 @@ public class KidsAppMqttClient implements MqttCallback{
 
 
     @Override
-    public void messageArrived(String topic, MqttMessage message) throws Exception {
+    public void messageArrived(String topic, MqttMessage message) {
         messageRouter.processMessage(topic, new String(message.getPayload()));
         System.out.println("Message received on topic " + topic + ": " + new String(message.getPayload()));
     }

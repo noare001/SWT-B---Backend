@@ -30,6 +30,7 @@ public class MessageRouter {
         switch (topic){
             case "stadt/online": cache.init();break;
             case "offer/processed": cache.update(payload);break;
+            case "registration/processed": cache.updateRegistration(payload);break;
         }
     }
 

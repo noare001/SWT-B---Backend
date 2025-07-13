@@ -147,7 +147,7 @@ public class KidsAppController {
      * Bsp: localhost:8090/api/offer?jwt={jwt}
      */
     @PostMapping("/offer")
-    public ResponseEntity<String> addOffer(@RequestParam("jwt") String jwt, @RequestBody JsonNode jsonNode) throws MqttException {
+    public ResponseEntity<String> addOffer(@RequestParam("jwt") String jwt, @RequestBody JsonNode jsonNode) {
         Map<String,Object> claims = userService.getJwtUtil().getClaims(jwt);
         if (!"AUTHOR".equals(claims.get("role"))) {
             ResponseEntity.badRequest().build();
@@ -165,52 +165,34 @@ public class KidsAppController {
                                                 @RequestParam("offer") String offerId) {
         try {
             Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
-            Integer userId = (Integer) claims.get("id");
-            Integer parsedOfferId = Integer.parseInt(offerId);
+            String userId = String.valueOf(claims.get("id"));
 
             // JSON-Nachricht bauen
-            String payload = String.format("{\"userId\": %d, \"offerId\": %d}", userId, parsedOfferId);
+            String payload = String.format("{\"userId\": %s, \"offerId\": %s}", userId, offerId);
 
             // MQTT senden
             router.sendMessage("offer/register", payload);
-
+            //In der cache speichern
+            appCache.updateRegistration(appCache.getRegistrationKey(userId,offerId), RegistrationStatus.PENDING);
             return ResponseEntity.ok("Registrierung wurde gesendet.");
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("Fehler: " + e.getMessage());
         }
     }
 
-    @PostMapping("/offer/status")
-    public ResponseEntity<String> changeStatus(@RequestParam("jwt") String jwt,
-                                               @RequestParam("offer") String offerId,
-                                               @RequestParam("status") RegistrationStatus status) {
-
-        try {
-            Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
-
-            Integer userId = (Integer) claims.get("id");
-            Integer parsedOfferId = Integer.parseInt(offerId);
-            RegistrationStatus parsedStatus = RegistrationStatus.valueOf(status.name());
-
-            var role = claims.get("role");
-
-//            if (!role.equals("AUTHOR")) {
-//                return ResponseEntity.badRequest().build();
-//            }
-
-            // Status jetzt mit im JSON
-            String payload = String.format(
-                    "{\"userId\": %d, \"offerId\": %d, \"status\": \"%s\"}",
-                    userId, parsedOfferId, parsedStatus.name()
-            );
-
-            // Nachricht senden
-            router.sendMessage("offer/status", payload);
-
-            return ResponseEntity.ok("Statusänderung wurde gesendet.");
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body("Fehler: " + e.getMessage());
-        }
+    @GetMapping("/offer/register")
+    public ResponseEntity<Map<RegistrationStatus, Set<Integer>>> getUserRegistrations(@RequestParam("jwt") String jwt) {
+        Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
+        String userId = String.valueOf(claims.get("id"));
+        return ResponseEntity.ok(appCache.getUserRegistrations(userId));
+    }
+    @DeleteMapping("/offer/register")
+    public ResponseEntity<Void> deleteUserRegistrations(@RequestParam("jwt") String jwt,@RequestParam("offer") String offerId) throws MqttException {
+        Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
+        String userId = String.valueOf(claims.get("id"));
+        router.sendMessage("registrations/delete", appCache.getRegistrationKey(userId, offerId));
+        appCache.deleteRegistration(appCache.getRegistrationKey(userId, offerId));
+        return ResponseEntity.ok().build();
     }
 }
 

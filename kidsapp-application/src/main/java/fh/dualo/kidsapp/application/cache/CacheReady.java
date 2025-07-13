@@ -3,24 +3,32 @@ package fh.dualo.kidsapp.application.cache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import fh.dualo.kidsapp.application.enums.RegistrationStatus;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class CacheReady extends State {
     //Der Schlüssel ist {offerId}-{providerId}
     private Map<String, JsonNode> cache;
+    //Der Schlüssel ist "{offerId}-{userId}"
+    private Map<String, RegistrationStatus> registrationCache;
 
-    public CacheReady(Map<String, JsonNode> cache) {
+    public CacheReady(Map<String, JsonNode> cache, Map<String, RegistrationStatus> registrationCache) {
         this.cache = new ConcurrentHashMap<>();
+        this.registrationCache = new ConcurrentHashMap<>();
         this.cache.putAll(cache);
+        this.registrationCache.putAll(registrationCache);
     }
 
     @Override
     public Map<String, JsonNode> getOffer() {
-            return cache.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            return cache;
+    }
+
+    @Override
+    public Map<String,RegistrationStatus> getRegistrations() {
+            return registrationCache;
     }
 
     public void update(String newOffer){

@@ -1,6 +1,9 @@
 package fh.dualo.kidsapp.application.cache;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fh.dualo.kidsapp.application.enums.RegistrationStatus;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +34,12 @@ public class KidsAppCache {
 
 
     public void fillCache(){
-        Map<String,JsonNode> data = new CacheLoading(webClient).getOffer();
+        CacheLoading cacheLoading = new CacheLoading(webClient);
+        Map<String,JsonNode> data = cacheLoading.getOffer();
+        Map<String,RegistrationStatus> registrations = cacheLoading.getRegistrations();
         if(!data.isEmpty()){
             System.out.println("\u001B[32mCache erfolgreich geladen!\u001B[0m");
-            state = new CacheReady(data);
+            state = new CacheReady(data, registrations);
         }
     }
 
@@ -68,7 +74,7 @@ public class KidsAppCache {
         if(state instanceof CacheLoading){
             if(!data.isEmpty()){
                 System.out.println("\u001B[32mCache erfolgreich geladen!\u001B[0m");
-                state = new CacheReady(data);
+                state = new CacheReady(data, state.getRegistrations());
             }
             return data.values().stream()
                     .filter(jsonNode -> {
@@ -103,6 +109,51 @@ public class KidsAppCache {
 
     public void delete(String key){
         state.getOffer().remove(key);
+    }
+
+    //Registration
+    public void updateRegistration(String key, RegistrationStatus status){
+        if(state instanceof CacheReady){
+            state.getRegistrations().put(key, status);
+        }else {
+            init();
+        }
+    }
+    public void updateRegistration(String json){
+        if(state instanceof CacheReady) {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                JsonNode node = mapper.readTree(json);
+                String offerId = node.get("offerId").asText();
+                String userId = node.get("userId").asText();
+                String status = node.get("status").asText();
+                state.getRegistrations().put(getRegistrationKey(userId, offerId), RegistrationStatus.valueOf(status));
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException("Invalid JSON: " + json, e);
+            }
+        }else {
+            init();
+        }
+    }
+
+    public Map<RegistrationStatus, Set<Integer>> getUserRegistrations(String userId) {
+        return state.getRegistrations().entrySet().stream()
+                .filter(entry -> entry.getKey().endsWith("-" + userId))
+                .collect(Collectors.groupingBy(
+                        Map.Entry::getValue,
+                        Collectors.mapping(
+                                entry -> Integer.parseInt(entry.getKey().split("-")[0]),
+                                Collectors.toSet()
+                        )
+                ));
+    }
+    public void deleteRegistration(String key){
+        if(state instanceof CacheReady){
+            state.getRegistrations().remove(key);
+        }
+    }
+    public String getRegistrationKey(String userId, String offerId){
+        return offerId + "-" + userId;
     }
 
 }

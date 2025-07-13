@@ -5,9 +5,8 @@ import backend.stadt.modells.OfferRegistration;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OfferRegistrationRepository extends JpaRepository<OfferRegistration, OfferRegistrationKey> {
-    List<OfferRegistration> findByOffer_OfferId(Integer offerId);
-    List<OfferRegistration> findByUser_Id(Long userId);
+    Optional<OfferRegistration> findByUser_IdAndOffer_OfferId(int userId, int offerId);
 }
-
