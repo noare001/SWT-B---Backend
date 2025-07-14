@@ -61,18 +61,4 @@ public class Provider {
         offers.forEach(o -> offerMap.put(o.getOfferId(), o.getName()));
         return offerMap;
     }
-
-    // equals() und hashCode() basierend auf id empfohlen
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Provider provider = (Provider) o;
-        return id != null && id.equals(provider.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return id != null ? id.hashCode() : super.hashCode();
-    }
 }

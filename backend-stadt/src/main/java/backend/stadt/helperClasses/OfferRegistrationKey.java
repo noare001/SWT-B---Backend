@@ -17,19 +17,5 @@ import java.util.Objects;
 public class OfferRegistrationKey implements Serializable {
     private Integer userId;
     private Integer offerId;
-
-    // equals() und hashCode() implementieren!
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof OfferRegistrationKey)) return false;
-        OfferRegistrationKey that = (OfferRegistrationKey) o;
-        return Objects.equals(userId, that.userId) && Objects.equals(offerId, that.offerId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, offerId);
-    }
 }
 

@@ -114,21 +114,4 @@ public class Offer {
     public String getProviderName(){
         return provider.getName();
     }
-    // equals() und hashCode() basierend auf angebotsId empfohlen
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Offer offer = (Offer) o;
-        // Wenn die ID null ist (noch nicht persistiert), sind Objekte nur gleich, wenn sie dieselbe Instanz sind.
-        // Ansonsten Vergleich über die ID.
-        return offerId != null && offerId.equals(offer.offerId);
-    }
-
-    @Override
-    public int hashCode() {
-        // Wenn die ID null ist, gibt super.hashCode() zurück (oder eine Konstante).
-        // Nach dem Persistieren basiert der Hashcode auf der ID.
-        return offerId != null ? offerId.hashCode() : super.hashCode();
-    }
 }

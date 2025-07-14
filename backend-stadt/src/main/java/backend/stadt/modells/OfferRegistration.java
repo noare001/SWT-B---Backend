@@ -46,7 +46,7 @@ public class OfferRegistration {
         return offer.getOfferId();
     }
     @JsonProperty("userId")
-    public Integer getProviderName(){
+    public Integer getUserId(){
         return user.getId();
     }
 }
