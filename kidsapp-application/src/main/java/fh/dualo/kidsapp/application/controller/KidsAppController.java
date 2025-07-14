@@ -169,7 +169,6 @@ public class KidsAppController {
 
             // JSON-Nachricht bauen
             String payload = String.format("{\"userId\": %s, \"offerId\": %s}", userId, offerId);
-
             // MQTT senden
             router.sendMessage("offer/register", payload);
             //In der cache speichern

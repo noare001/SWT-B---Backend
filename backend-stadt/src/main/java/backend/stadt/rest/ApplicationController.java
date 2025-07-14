@@ -1,13 +1,12 @@
 package backend.stadt.rest;
 
 import backend.stadt.enums.RegistrationStatus;
+import backend.stadt.helperClasses.OfferBuilder;
 import backend.stadt.modells.Provider;
 import backend.stadt.repositorys.DatabaseService;
-import backend.stadt.enums.OfferStatus;
 import backend.stadt.helperClasses.AppUserDTO;
 import backend.stadt.modells.Offer;
 import backend.stadt.user.AppUser;
-import backend.stadt.user.Role;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import java.util.Map;
 public class ApplicationController {
 
     private DatabaseService databaseService;
-
     @Autowired
     public ApplicationController(DatabaseService databaseService) {
         this.databaseService = databaseService;
@@ -47,14 +45,14 @@ public class ApplicationController {
 
     @PostMapping("/offer")
     public ResponseEntity<Map<String,Offer>> addOffer(@RequestParam("id") int userId, @RequestBody Offer newOffer) {
-        AppUser user = databaseService.getUser(userId).orElseThrow();
-        if(!user.getRole().equals(Role.AUTHOR) || user.getProvider() == null){
-            ResponseEntity.badRequest().build();
-        }
-        newOffer.setStatus(OfferStatus.PROCESSING);
-        newOffer.setProvider(user.getProvider());
-        databaseService.saveOffer(newOffer);
-        return ResponseEntity.ok(Map.of(databaseService.getOfferKey(newOffer), newOffer));
+        Offer offer = OfferBuilder
+                .fromTemplate(newOffer)
+                .withProvider(databaseService.getUser(userId).orElseThrow())
+                .withDefaultStatus()
+                .build();
+
+        databaseService.saveOffer(offer);
+        return ResponseEntity.ok(Map.of(databaseService.getOfferKey(offer), offer));
     }
 
     @DeleteMapping("/offer")

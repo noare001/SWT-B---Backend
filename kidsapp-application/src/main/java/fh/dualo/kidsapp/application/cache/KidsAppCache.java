@@ -62,7 +62,7 @@ public class KidsAppCache {
     }
 
     public void update(String newOffer){
-        System.out.println("HELLOOOO");
+        System.out.println("Updating an Offer");
         if(state instanceof CacheReady){
             ((CacheReady) state).update(newOffer);
         }else{
