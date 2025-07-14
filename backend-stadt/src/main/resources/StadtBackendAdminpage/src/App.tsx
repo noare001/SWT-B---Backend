@@ -5,7 +5,7 @@ import ProviderList from "./component/ProviderList.tsx";
 import UserList from "./component/UserList.tsx";
 
 function App() {
-    const [render, setRender] = useState<"offer" | "user" | "anfragen" | "provider">("user")
+    const [render, setRender] = useState<"offer" | "user" | "provider">("user")
 
     const [isConnected, setIsConnected] = useState(false);
 
@@ -17,8 +17,6 @@ function App() {
 
     const renderContent = () => {
         switch (render) {
-            case "anfragen":
-                return <p>(Noch nicht implementiert)</p>;
             case "offer":
                 return <OfferList/>;
             case "user":
@@ -46,7 +44,6 @@ function App() {
                     <button onClick={() => setRender("user")}>User Liste</button>
                     <button onClick={() => setRender("offer")}>Offer Liste</button>
                     <button onClick={() => setRender("provider")}>Provider Liste</button>
-                    <button onClick={() => console.log("Noch nicht umgesetzt")}>Anfragen Liste</button>
                 </section>
                 <section className="content-section">{renderContent()}</section>
             </main>
