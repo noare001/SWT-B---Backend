@@ -41,7 +41,7 @@ public class KidsAppUserService {
                         .queryParam("email", email)
                         .build())
                 .exchangeToMono(response -> {
-                    if (response.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                    if (!response.statusCode().equals(HttpStatus.OK)) {
                         return Mono.empty();
                     }
                     return response.bodyToMono(new ParameterizedTypeReference<>() {
@@ -67,7 +67,7 @@ public class KidsAppUserService {
                         .queryParam("password", password)
                         .build())
                 .exchangeToMono(response -> {
-                    if (response.statusCode().equals(HttpStatus.NOT_FOUND)) {
+                    if (!response.statusCode().equals(HttpStatus.OK)) {
                         return Mono.empty();
                     }
                     return response.bodyToMono(new ParameterizedTypeReference<>() {
@@ -76,7 +76,7 @@ public class KidsAppUserService {
     }
 
     private Map<String, Object> handleResponse(Map<String, Object> map) {
-        if (map == null || map.containsKey("error")) {
+        if (map == null || map.isEmpty()) {
             return null;
         }
         map.put("jwt", jwtUtil.generateToken(map));

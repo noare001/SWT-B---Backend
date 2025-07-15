@@ -26,12 +26,21 @@ public class ApplicationController {
     }
 
     @GetMapping("/login")
-    public ResponseEntity<AppUserDTO> login(@RequestParam("name") String name, @RequestParam("password") String password) {
-        return ResponseEntity.ok(databaseService.login(name,password));
+    public ResponseEntity<AppUserDTO> login(@RequestParam("name") String name,
+                                            @RequestParam("password") String password) {
+        AppUserDTO user = databaseService.login(name, password);
+        if(user == null) {
+            ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(user);
     }
     @GetMapping("/register")
     public ResponseEntity<AppUserDTO> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
-        return ResponseEntity.ok(databaseService.register(name,password,email));
+        AppUserDTO user = databaseService.register(name, password, email);
+        if(user == null) {
+            ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(user);
     }
     @GetMapping("/registrations")
     public ResponseEntity<Map<String, RegistrationStatus>> getRegistrations() {

@@ -42,15 +42,11 @@ public class KidsAppController {
     @GetMapping
     @RequestMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestParam("name") String name, @RequestParam("password") String password) {
-
-        // block() erhält entweder eine Map oder null (bei Mono.empty())
         Map<String, Object> result = userService.login(password, name);
 
         if (result == null) {
-            // 404 ohne Body
             return ResponseEntity.notFound().build();
         }
-        // 200 OK mit Body
         return ResponseEntity.ok(result);
     }
 
@@ -60,15 +56,11 @@ public class KidsAppController {
     @GetMapping
     @RequestMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
-        System.out.println("REGISTER IN STADT");
-        // block() erhält entweder eine Map oder null (bei Mono.empty())
         Map<String, Object> result = userService.register(password, name,email);
 
         if (result == null) {
-            // 404 ohne Body
             return ResponseEntity.notFound().build();
         }
-        // 200 OK mit Body
         return ResponseEntity.ok(result);
     }
 

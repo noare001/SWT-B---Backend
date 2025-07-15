@@ -35,13 +35,16 @@ public class UserService {
         userRepo.deleteById(id);
     }
     public AppUserDTO login(String username, String password) {
-        AppUser user = userRepo.getAppUserByNameAndPassword(username, sha256Hash(password));
+        AppUser user = userRepo.getAppUserByNameAndPassword(username, sha256Hash(password)).orElse(null);
+        if(user==null) {
+            return null;
+        }
         return new AppUserDTO(user);
     }
 
     public AppUserDTO register(String username, String password, String email) {
         if (userRepo.existsByName(username)) {
-            throw new IllegalArgumentException("Benutzername bereits vergeben");
+            return null;
         }
 
         // Passwort hashen
