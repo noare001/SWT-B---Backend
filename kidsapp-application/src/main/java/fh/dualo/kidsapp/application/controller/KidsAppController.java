@@ -39,11 +39,10 @@ public class KidsAppController {
     /**
      * Bsp: localhost:8090/api/login?name=lukes&password=lukes
      */
-    @GetMapping
-    @RequestMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestParam("name") String name, @RequestParam("password") String password) {
+    @GetMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestParam("name") String name,
+                                                     @RequestParam("password") String password) {
         Map<String, Object> result = userService.login(password, name);
-
         if (result == null) {
             return ResponseEntity.notFound().build();
         }
@@ -53,8 +52,7 @@ public class KidsAppController {
     /**
      * Bsp: localhost:8090/api/register?name=lukes&password=lukes&email=lukesmail@mail.de
      */
-    @GetMapping
-    @RequestMapping("/register")
+    @GetMapping("/register")
     public ResponseEntity<Map<String, Object>> register(@RequestParam("name") String name, @RequestParam("password") String password, @RequestParam("email") String email) {
         Map<String, Object> result = userService.register(password, name,email);
 
@@ -158,12 +156,8 @@ public class KidsAppController {
         try {
             Map<String, Object> claims = userService.getJwtUtil().getClaims(jwt);
             String userId = String.valueOf(claims.get("id"));
-
-            // JSON-Nachricht bauen
             String payload = String.format("{\"userId\": %s, \"offerId\": %s}", userId, offerId);
-            // MQTT senden
             router.sendMessage("offer/register", payload);
-            //In der cache speichern
             appCache.updateRegistration(appCache.getRegistrationKey(userId,offerId), RegistrationStatus.PENDING);
             return ResponseEntity.ok("Registrierung wurde gesendet.");
         } catch (Exception e) {

@@ -30,7 +30,7 @@ public class ApplicationController {
                                             @RequestParam("password") String password) {
         AppUserDTO user = databaseService.login(name, password);
         if(user == null) {
-            ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(user);
     }
@@ -53,13 +53,12 @@ public class ApplicationController {
     }
 
     @PostMapping("/offer")
-    public ResponseEntity<Map<String,Offer>> addOffer(@RequestParam("id") int userId, @RequestBody Offer newOffer) {
+    public ResponseEntity<Map<String,Offer>> addOffer(@RequestParam("id") int userId,
+                                                      @RequestBody Offer newOffer) {
         Offer offer = OfferBuilder
                 .fromTemplate(newOffer)
                 .withProvider(databaseService.getUser(userId).orElseThrow())
-                .withDefaultStatus()
-                .build();
-
+                .withDefaultStatus().build();
         databaseService.saveOffer(offer);
         return ResponseEntity.ok(Map.of(databaseService.getOfferKey(offer), offer));
     }
